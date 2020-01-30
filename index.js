@@ -104,7 +104,8 @@ try {
         }
 
         args.push(options.arguments);
-        args.push(`"${options.scriptFile}"`);
+        const scriptPath = path.resolve(options.scriptFile);
+        args.push(`"${scriptPath}"`);
 
         const makeCommand = `${nsis3Exe} ${args.join(' ')}`;
         console.log(`Running ${makeCommand}`);
