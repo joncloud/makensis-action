@@ -41,13 +41,17 @@ try {
     console.log(options);
 
     const destination = path.resolve(__dirname, '.nsis');
+    console.log(`.nsis path: ${destination}`);
 
     let nsis3Directory = '';
     if (!fs.existsSync(destination)) {
+
         const startTime = new Date();
         const zipPath = path.resolve(__dirname, 'nsis', 'nsis.zip');
-        const process = execSync(`7z x "-o${destination}" "${zipPath}"`);
-        // TODO check 0 exit code
+
+        const extractCommand = `7z x "-o${destination}" "${zipPath}"`;
+        console.log(`Running ${extractCommand}`);
+        const process = execSync(extractCommand);
 
         const items = fs.readdirSync(destination);
         nsis3Directory = path.resolve(destination, items[0]);
@@ -92,8 +96,9 @@ try {
         args.push(options.arguments);
         args.push(`"${options.scriptFile}"`);
 
-        const process = execSync(`${nsis3Exe} ${args.join(' ')}`);
-        // TODO check 0 exit code
+        const makeCommand = `${nsis3Exe} ${args.join(' ')}`;
+        console.log(`Running ${makeCommand}`);
+        const process = execSync(makeCommand);
     }
     else {
         console.log(`NSIS installed at ${nsis3Exe}`);
