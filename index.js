@@ -18,6 +18,7 @@ const getString = (value) =>
 const debugMode = getBoolean(process.env.debug);
 
 const copyDirectory = (src, dest) => {
+    console.log('copyDirectory', src, dest);
     const items = fs.readdirSync(src);
     items.forEach(item => {
         const name = path.basename(item);
@@ -45,11 +46,6 @@ try {
     console.log(options);
 
     const destination = path.join(__dirname, '.nsis');
-    console.log(`.nsis path: ${destination}`);
-
-    console.log('__dirname:', dirTree(__dirname, { exclude: /node_modules/ }))
-    console.log('__dirname/nsis:', dirTree(path.join(__dirname, 'nsis'), { exclude: /node_modules/ }));
-    console.log('__dirname/nsis exists:', fs.existsSync(destination));
 
     let nsis3Directory = '';
     if (!fs.existsSync(destination)) {
@@ -65,6 +61,7 @@ try {
         nsis3Directory = path.join(destination, items[0]);
 
         if (options.includeMorePlugins) {
+            console.log('includeMorePlugins');
             const pluginPath = path.join(__dirname, 'plugins');
             const pluginOutput = path.join(nsis3Directory, 'plugins', 'x86-ansi');
             
@@ -72,6 +69,7 @@ try {
         }
 
         if (!!options.includeCustomPluginsPath) {
+            console.log('includeCustomPluginsPath');
             const pluginOutput = path.join(nsis3Directory, 'plugins', 'x86-ansi');
 
             copyDirectory(options.includeCustomPluginsPath, pluginOutput);
