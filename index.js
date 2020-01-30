@@ -22,8 +22,8 @@ const copyDirectory = (src, dest) => {
     items.forEach(item => {
         const name = path.basename(item);
         fs.copyFileSync(
-            path.resolve(src, name),
-            path.resolve(dest, name)
+            path.join(src, name),
+            path.join(dest, name)
         );
     });
 };
@@ -42,20 +42,20 @@ try {
     
     console.log(options);
 
-    const destination = path.resolve(__dirname, '.nsis');
+    const destination = path.join(__dirname, '.nsis');
     console.log(`.nsis path: ${destination}`);
 
     console.log('__dirname:', dirTree(__dirname, { exclude: /node_modules/ }))
-    console.log('__dirname/nsis:', dirTree(path.resolve(__dirname, 'nsis'), { exclude: /node_modules/ }));
+    console.log('__dirname/nsis:', dirTree(path.join(__dirname, 'nsis'), { exclude: /node_modules/ }));
     console.log('__dirname/nsis exists:', fs.existsSync(destination));
 
     let nsis3Directory = '';
     if (!fs.existsSync(destination)) {
 
         const startTime = new Date();
-        const zipPath = path.resolve(__dirname, 'nsis', 'nsis.zip');
+        const zipPath = path.join(__dirname, 'nsis', 'nsis.zip');
 
-        const d = path.resolve(__dirname, 'nsis');
+        const d = path.join(__dirname, 'nsis');
         const test = fs.readdir(d);
         console.log(`path (${d}):`, test);
 
@@ -64,17 +64,17 @@ try {
         const process = execSync(extractCommand);
 
         const items = fs.readdirSync(destination);
-        nsis3Directory = path.resolve(destination, items[0]);
+        nsis3Directory = path.join(destination, items[0]);
 
         if (options.includeMorePlugins) {
-            const pluginPath = path.resolve(__dirname, 'plugins');
-            const pluginOutput = path.resolve(nsis3Directory, 'plugins', 'x86-ansi');
+            const pluginPath = path.join(__dirname, 'plugins');
+            const pluginOutput = path.join(nsis3Directory, 'plugins', 'x86-ansi');
             
             copyDirectory(pluginPath, pluginOutput);
         }
 
         if (!!options.includeCustomPluginsPath) {
-            const pluginOutput = path.resolve(nsis3Directory, 'plugins', 'x86-ansi');
+            const pluginOutput = path.join(nsis3Directory, 'plugins', 'x86-ansi');
 
             copyDirectory(options.includeCustomPluginsPath, pluginOutput);
         }
@@ -86,10 +86,10 @@ try {
 
     else {
         const items = fs.readdirSync(destination);
-        nsis3Directory = path.resolve(destination, items[0]);
+        nsis3Directory = path.join(destination, items[0]);
     }
 
-    const nsis3Exe = path.resolve(nsis3Directory, 'makensis.exe');
+    const nsis3Exe = path.join(nsis3Directory, 'makensis.exe');
     core.setOutput('nsis-path', nsis3Exe);
 
     if (!options.justInclude) {
