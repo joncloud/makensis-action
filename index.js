@@ -109,15 +109,11 @@ try {
         const scriptPath = path.resolve(options.scriptFile);
         args.push(`"${scriptPath}"`);
 
-       
-        console.log('github.context', github.context);
-        console.log('github', github);
-        console.log(path.resolve('..'));
-        console.log(dirTree('./../', { exclude: /node_modules/ }));
-
         const makeCommand = `${nsis3Exe} ${args.join(' ')}`;
         console.log(`Running ${makeCommand}`);
         const process = execSync(makeCommand);
+        
+        console.log(dirTree('./../', { exclude: /node_modules/ }));
     }
     else {
         console.log(`NSIS installed at ${nsis3Exe}`);
