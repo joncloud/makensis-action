@@ -22,7 +22,7 @@ inputs:
     default: 'no'
     
   include-custom-plugins-path:
-    description: 'If you want include additional plugins that aren't in our default directory, you could specify your plugin directory so your plugins will copied and used into NSIS process. This will work with plugins/x86-ansi.'
+    description: "If you want include additional plugins that aren't in our default directory, you could specify your plugin directory so your plugins will copied and used into NSIS process. This will work with plugins/x86-ansi."
     required: false
     default: ''
 
