@@ -81,7 +81,7 @@ try {
 
         const endTime = new Date();
         const totalTime = endTime - startTime;
-        console.log(`Time taken (Unzip): ${totalTime} second(s)`);
+        console.log(`Time taken (Unzip): ${totalTime} millisecond(s)`);
     }
 
     else {
