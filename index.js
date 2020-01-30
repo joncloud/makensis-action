@@ -47,6 +47,7 @@ try {
 
     console.log('__dirname:', dirTree(__dirname, { exclude: /node_modules/ }))
     console.log('__dirname/nsis:', dirTree(path.resolve(__dirname, 'nsis'), { exclude: /node_modules/ }));
+    console.log('__dirname/nsis exists:', fs.existsSync(destination));
 
     let nsis3Directory = '';
     if (!fs.existsSync(destination)) {
