@@ -45,7 +45,7 @@ try {
     const destination = path.resolve(__dirname, '.nsis');
     console.log(`.nsis path: ${destination}`);
 
-    const filteredTree = dirTree(__dirname, { exclude: /node_modules/ });
+    const filteredTree = dirTree(path.resolve(__dirname, 'nsis'), { exclude: /node_modules/ });
     console.log('tree:', filteredTree);
 
     let nsis3Directory = '';
