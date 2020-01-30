@@ -1,4 +1,4 @@
-name: 'nsis'
+name: 'makensis'
 description: 'Nullsoft scriptable install system action'
 inputs:
   script-file:
