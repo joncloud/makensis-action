@@ -1,10 +1,7 @@
 const core = require('@actions/core');
-const github = require('@actions/github');
 const fs = require('fs');
 const { execSync } = require('child_process');
 const path = require('path');
-
-const dirTree = require('./directory-tree');
 
 const getBoolean = (value) => {
     if (!value) {
@@ -112,8 +109,6 @@ try {
         const makeCommand = `${nsis3Exe} ${args.join(' ')}`;
         console.log(`Running ${makeCommand}`);
         const process = execSync(makeCommand);
-        
-        console.log(dirTree('./', { exclude: /node_modules/ }));
     }
     else {
         console.log(`NSIS installed at ${nsis3Exe}`);
