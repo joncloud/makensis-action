@@ -1,2 +1,4 @@
 /.vscode
 nsis/nsis/
+.nsis/
+*.exe

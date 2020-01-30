@@ -19,8 +19,10 @@ const copyDirectory = (src, dest) => {
     const items = fs.readdirSync(src);
     items.forEach(item => {
         const name = path.basename(item);
-        const final = path.resolve(dest, name);
-        fs.copyFileSync(item, final);
+        fs.copyFileSync(
+            path.resolve(src, name),
+            path.resolve(dest, name)
+        );
     });
 };
 
@@ -38,28 +40,27 @@ try {
     
     console.log(options);
 
-    const currentPath = __dirname;
-    const output = currentPath + '\\nsis.zip';
-    const destination = currentPath + '\\';
+    const destination = path.resolve(__dirname, '.nsis');
 
     let nsis3Directory = '';
     if (!fs.existsSync(destination)) {
         const startTime = new Date();
-        const process = execSync(`7z x -o${output} ${destination}`);
+        const zipPath = path.resolve(__dirname, 'nsis', 'nsis.zip');
+        const process = execSync(`7z x "-o${destination}" "${zipPath}"`);
         // TODO check 0 exit code
 
         const items = fs.readdirSync(destination);
-        nsis3Directory = items[0];
+        nsis3Directory = path.resolve(destination, items[0]);
 
         if (options.includeMorePlugins) {
-            const pluginPath = currentPath + '\\plugins';
-            const pluginOutput = nsis3Directory + '\\plugins\\x86-ansi';
+            const pluginPath = path.resolve(__dirname, 'plugins');
+            const pluginOutput = path.resolve(nsis3Directory, 'plugins', 'x86-ansi');
             
             copyDirectory(pluginPath, pluginOutput);
         }
 
         if (!!options.includeCustomPluginsPath) {
-            const pluginOutput = nsis3Directory + '\\plugins\\x86-ansi';
+            const pluginOutput = path.resolve(nsis3Directory, 'plugins', 'x86-ansi');
 
             copyDirectory(options.includeCustomPluginsPath, pluginOutput);
         }
@@ -71,10 +72,10 @@ try {
 
     else {
         const items = fs.readdirSync(destination);
-        nsis3Directory = items[0];
+        nsis3Directory = path.resolve(destination, items[0]);
     }
 
-    const nsis3Exe = nsis3Directory + '\\makensis.exe';
+    const nsis3Exe = path.resolve(nsis3Directory, 'makensis.exe');
     core.setOutput('nsis-path', nsis3Exe);
 
     if (!options.justInclude) {
