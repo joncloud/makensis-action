@@ -21,6 +21,8 @@ const copyDirectory = (src, dest) => {
     const items = fs.readdirSync(src);
     items.forEach(item => {
         const name = path.basename(item);
+        console.log('copying', path.join(src, name),
+        path.join(dest, name));
         fs.copyFileSync(
             path.join(src, name),
             path.join(dest, name)
