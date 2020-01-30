@@ -6,14 +6,8 @@ const path = require('path');
 
 const dirTree = require('./directory-tree');
 
-const getBoolean = (value) => {
-    const result = (value && typeof value === 'string' && value.toLowerCase() === 'yes') || 
-        !!value;
-
-    console.log(value, '=>', result);
-
-    return result;
-}
+const getBoolean = (value) => 
+    (value && typeof value === 'string' && value.toLowerCase() === 'yes');
 
 const getString = (value) =>
     value && typeof value === 'string'
