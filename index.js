@@ -4,6 +4,8 @@ const fs = require('fs');
 const { execSync } = require('child_process');
 const path = require('path');
 
+const dirTree = require('./directory-tree');
+
 const getBoolean = (value) => {
     if (!value) {
         return false;
@@ -106,6 +108,9 @@ try {
         args.push(options.arguments);
         const scriptPath = path.resolve(options.scriptFile);
         args.push(`"${scriptPath}"`);
+
+        console.log(path.resolve('.'));
+        console.log(dirTree('./', { exclude: /node_modules/ }));
 
         const makeCommand = `${nsis3Exe} ${args.join(' ')}`;
         console.log(`Running ${makeCommand}`);
