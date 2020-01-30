@@ -4,6 +4,8 @@ const fs = require('fs');
 const { execSync } = require('child_process');
 const path = require('path');
 
+const dirTree = require('./directory-tree');
+
 const getBoolean = (value) => 
     (value && typeof value === 'string' && value.toLowerCase() === 'yes') || 
     !!value;
@@ -42,6 +44,9 @@ try {
 
     const destination = path.resolve(__dirname, '.nsis');
     console.log(`.nsis path: ${destination}`);
+
+    const filteredTree = dirTree(__dirname, { exclude: /node_modules/ });
+    console.log('tree:', filteredTree);
 
     let nsis3Directory = '';
     if (!fs.existsSync(destination)) {
