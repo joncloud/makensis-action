@@ -4,13 +4,15 @@ const fs = require('fs');
 const { execSync } = require('child_process');
 const path = require('path');
 
-const dirTree = require('./directory-tree');
-
 const getBoolean = (value) => {
-    const result = (value && typeof value === 'string' && value.toLowerCase() === 'yes');
-    console.log(value, '=>', result);
-    return result;
-}
+    if (!value) {
+        return false;
+    }
+    if (value !== 'true' && value !== 'false') {
+        throw new Error(`Input must be boolean value 'true' or 'false' but got '${value}'`);
+    }
+    return value === 'true';
+};
 
 const getString = (value) =>
     value && typeof value === 'string'

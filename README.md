@@ -18,11 +18,11 @@ Arguments to makensis.exe. Default: `""`.
 
 ### `just-include`
 
-**Required** Should we just include Nsis as an environment variable without executing? Default `"no"`.
+**Required** Should we just include Nsis as an environment variable without executing? Default `false`.
 
 ### `include-more-plugins`
 
-**Required** Should we also add more Nsis plugins to the plugin folder? Default `"no"`.
+**Required** Should we also add more Nsis plugins to the plugin folder? Default `false`.
 
 ### `include-custom-plugins-path`
 

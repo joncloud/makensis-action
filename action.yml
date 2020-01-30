@@ -14,12 +14,12 @@ inputs:
   just-include:
     description: 'Should we just include Nsis as an environment variable without executing?'
     required: true
-    default: 'no'
+    default: false
 
   include-more-plugins:
     description: 'Should we also add more Nsis plugins to the plugin folder?'
     required: true
-    default: 'no'
+    default: false
     
   include-custom-plugins-path:
     description: "If you want include additional plugins that aren't in our default directory, you could specify your plugin directory so your plugins will copied and used into NSIS process. This will work with plugins/x86-ansi."
