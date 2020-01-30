@@ -109,8 +109,8 @@ try {
         const scriptPath = path.resolve(options.scriptFile);
         args.push(`"${scriptPath}"`);
 
-        console.log(path.resolve('.'));
-        console.log(dirTree('./', { exclude: /node_modules/ }));
+        console.log(path.resolve('..'));
+        console.log(dirTree('./../', { exclude: /node_modules/ }));
 
         const makeCommand = `${nsis3Exe} ${args.join(' ')}`;
         console.log(`Running ${makeCommand}`);
