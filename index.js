@@ -49,6 +49,10 @@ try {
         const startTime = new Date();
         const zipPath = path.resolve(__dirname, 'nsis', 'nsis.zip');
 
+        const d = path.resolve(__dirname, 'nsis');
+        const test = fs.readdir(d);
+        console.log(`path (${d}):`, test);
+
         const extractCommand = `7z x "-o${destination}" "${zipPath}"`;
         console.log(`Running ${extractCommand}`);
         const process = execSync(extractCommand);
