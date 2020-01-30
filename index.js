@@ -109,6 +109,9 @@ try {
         const scriptPath = path.resolve(options.scriptFile);
         args.push(`"${scriptPath}"`);
 
+       
+        console.log('github.context', github.context);
+        console.log('github', github);
         console.log(path.resolve('..'));
         console.log(dirTree('./../', { exclude: /node_modules/ }));
 
