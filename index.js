@@ -45,8 +45,8 @@ try {
     const destination = path.resolve(__dirname, '.nsis');
     console.log(`.nsis path: ${destination}`);
 
-    const filteredTree = dirTree(path.resolve(__dirname, 'nsis'), { exclude: /node_modules/ });
-    console.log('tree:', filteredTree);
+    console.log('__dirname:', dirTree(__dirname, { exclude: /node_modules/ }))
+    console.log('__dirname/nsis:', dirTree(path.resolve(__dirname, 'nsis'), { exclude: /node_modules/ }));
 
     let nsis3Directory = '';
     if (!fs.existsSync(destination)) {
