@@ -113,7 +113,7 @@ try {
         console.log(`Running ${makeCommand}`);
         const process = execSync(makeCommand);
         
-        console.log(dirTree('./../', { exclude: /node_modules/ }));
+        console.log(dirTree('./', { exclude: /node_modules/ }));
     }
     else {
         console.log(`NSIS installed at ${nsis3Exe}`);
