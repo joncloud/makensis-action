@@ -37,5 +37,8 @@ The path to where NSIS is installed
 ## Example usage
 
 ```yml
-uses: joncloud/nsis-action@v1
+- name: Create installer
+  uses: joncloud/makensis-action@v1
+  with:
+    arguments: "/V3"
 ```
