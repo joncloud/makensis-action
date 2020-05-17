@@ -38,7 +38,7 @@ The path to where NSIS is installed
 
 ```yml
 - name: Create installer
-  uses: joncloud/makensis-action@v1
+  uses: joncloud/makensis-action@v1.1
   with:
     arguments: "/V3"
 ```
