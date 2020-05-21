@@ -1,4 +1,4 @@
-# Nullsoft scriptable install system action
+# Nullsoft scriptable install system GitHub action
 
 This action downloads NSIS 3, and calls `makensis.exe` to create an installer. Due to the requirement of NSIS, this is only compatible on Windows.
 
