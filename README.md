@@ -10,35 +10,24 @@ This codebase was ported from the Azure DevOps Extension [dev-maxima/nsis-extens
 
 ### `script-file`
 
-**Required** Path to the .nsi script file. Default `"install.nsi"`.
+Path to the .nsi script file. Default `"install.nsi"`.
 
 ### `arguments`
 
 Arguments to makensis.exe. Default: `""`.
 
-### `just-include`
+### `additional-plugin-paths`
 
-**Required** Should we just include Nsis as an environment variable without executing? Default `false`.
-
-### `include-more-plugins`
-
-**Required** Should we also add more Nsis plugins to the plugin folder? Default `false`.
-
-### `include-custom-plugins-path`
-
-If you want include additional plugins that aren't in our default directory, you could specify your plugin directory so your plugins will copied and used into NSIS process. This will work with plugins/x86-ansi. Default: `""`.
-
-## Outputs
-
-### `nsis-path`
-
-The path to where NSIS is installed
+Newline-delimited list of paths to load plugins from. Default `""`.
 
 ## Example usage
 
 ```yml
 - name: Create installer
-  uses: joncloud/makensis-action@v1.2
+  uses: joncloud/makensis-action@v2.0
   with:
     arguments: "/V3"
 ```
+
+## Sample Projects
+* [joncloud/makensis-action-test](https://github.com/joncloud/makensis-action-test)
