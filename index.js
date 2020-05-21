@@ -43,7 +43,7 @@ try {
 
         // Options
         arguments: getString(core.getInput('arguments')),
-        includeCustomPluginsPath: getString(core.getInput('includeMorePlugins'))
+        includeCustomPluginsPath: getString(core.getInput('include-custom-plugins-path'))
     };
     
     console.log(options);
