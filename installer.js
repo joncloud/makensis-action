@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { execFileSync } = require('child_process');
+const { execSync } = require('child_process');
 const path = require('path');
 
 const isDirectory = (item) => {
@@ -103,8 +103,9 @@ class Installer {
         args.push(`"${path.resolve(scriptPath)}"`);
     
         const nsis3Exe = path.join(nsisInstallPath, 'makensis.exe');
-        this.debugLog(`Running ${nsis3Exe} ${args.join(' ')}`);
-        const process = execFileSync(nsis3Exe, args);
+        const makeCommand = `"${nsis3Exe}" ${args.join(' ')}`;
+        this.debugLog(`Running ${makeCommand}`);
+        const process = execSync(makeCommand);
     }
 };
 
