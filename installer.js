@@ -103,7 +103,7 @@ class Installer {
         args.push(`"${path.resolve(scriptPath)}"`);
     
         const nsis3Exe = path.join(nsisInstallPath, 'makensis.exe');
-        const makeCommand = `${nsis3Exe} ${args.join(' ')}`;
+        const makeCommand = `'${nsis3Exe}' ${args.join(' ')}`;
         this.debugLog(`Running ${makeCommand}`);
         const process = execSync(makeCommand);
     }
