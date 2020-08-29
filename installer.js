@@ -39,18 +39,10 @@ const copyDirectory = (src, dest) => {
     });
 };
 
-const nsisInstallPath = path.join(__dirname, '.nsis');
+const nsisInstallPath = path.join('C:', 'Program Files (x86)', 'NSIS');
 
-const shouldExtractInstaller = () => {
-    return !fs.existsSync(nsisInstallPath);
-};
-
-const extractInstaller = () => {
-    const zipPath = path.join(__dirname, 'nsis', 'nsis.zip');
-
-    const extractCommand = `7z x "-o${nsisInstallPath}" "${zipPath}"`;
-    console.log(`Running ${extractCommand}`);
-    const process = execSync(extractCommand);
+const installerPathExists = () => {
+    return fs.existsSync(nsisInstallPath);
 };
 
 class Installer {
@@ -81,22 +73,16 @@ class Installer {
     }
 
     createInstaller(scriptPath) {
-        if (shouldExtractInstaller()) {
-            this.debugLog('Extracting installer');
-            extractInstaller();
-        }
-        else {
-            this.debugLog('Installer already exists');
+        if (!installerPathExists()) {
+            const installerPathMessage = `Installer path does not exist at ${nsisInstallPath}`;
+            this.debugLog(installerPathMessage);
+            throw new Error(installerPathMessage);
         }
 
         console.log(`Creating installer for: ${scriptPath}`);
 
-        // Find whatever the first directory is, this is the versioned folder.
-        const items = fs.readdirSync(nsisInstallPath);
-        const nsis3Directory = path.join(nsisInstallPath, items[0]);
-
         // Include any of the plugins that may have been requested.
-        const nsisPluginPath = path.join(nsis3Directory, 'plugins');
+        const nsisPluginPath = path.join(nsisInstallPath, 'plugins');
         this.pluginPaths.forEach(pluginPath => {
             console.log('Including plugin path', pluginPath);
             copyDirectory(pluginPath, nsisPluginPath);
@@ -116,7 +102,7 @@ class Installer {
         args.push(this.arguments);
         args.push(`"${path.resolve(scriptPath)}"`);
     
-        const nsis3Exe = path.join(nsis3Directory, 'makensis.exe');
+        const nsis3Exe = path.join(nsisInstallPath, 'makensis.exe');
         const makeCommand = `${nsis3Exe} ${args.join(' ')}`;
         this.debugLog(`Running ${makeCommand}`);
         const process = execSync(makeCommand);

@@ -1,6 +1,6 @@
 # Nullsoft scriptable install system GitHub action
 
-This action downloads NSIS 3, and calls `makensis.exe` to create an installer. Due to the requirement of NSIS, this is only compatible on Windows.
+This action calls `C:\Program Files (x86)\NSIS\makensis.exe` to create an installer. Due to the requirement of NSIS, this is only compatible on Windows.
 
 This codebase was ported from the Azure DevOps Extension [dev-maxima/nsis-extension][].
 
@@ -24,7 +24,7 @@ Newline-delimited list of paths to load plugins from. Default `""`.
 
 ```yml
 - name: Create installer
-  uses: joncloud/makensis-action@v2.0
+  uses: joncloud/makensis-action@v3.0
   with:
     arguments: "/V3"
 ```

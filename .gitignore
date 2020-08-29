@@ -2,3 +2,4 @@
 nsis/nsis/
 .nsis/
 *.exe
+.DS_Store
