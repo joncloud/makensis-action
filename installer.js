@@ -90,7 +90,7 @@ class Installer {
 
         // Increase verbosity for debug
         const args = [];
-        if (this.arguments.indexOf('/V') === -1) {
+        if (this.arguments.indexOf('/V') === -1 && this.arguments.indexOf('-V') === -1) {
             if (this.debugMode) {
                 args.push('/V4');
             }
