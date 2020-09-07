@@ -1,6 +1,6 @@
 # Nullsoft scriptable install system GitHub action
 
-This action calls `C:\Program Files (x86)\NSIS\makensis.exe` to create an installer. Due to the requirement of NSIS, this is only compatible on Windows.
+This action calls `C:\Program Files (x86)\NSIS\makensis.exe` to create an installer. This action is currently only compatible with Windows.
 
 This codebase was ported from the Azure DevOps Extension [dev-maxima/nsis-extension][].
 
