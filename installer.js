@@ -49,7 +49,7 @@ class Installer {
     constructor(debugMode) {
         this.debugMode = debugMode;
         this.pluginPaths = [];
-        this.arguments = '';
+        this.customArguments = '';
     }
 
     debugLog(msg) {
@@ -58,18 +58,36 @@ class Installer {
         }
     }
 
-    getArguments() {
-        return this.arguments;
+    getCustomArguments() {
+        return this.customArguments;
     }
 
-    setArguments(value) {
+    setCustomArguments(value) {
         this.debugLog(`Settings arguments: ${value}`);
-        this.arguments = value;
+        this.customArguments = value;
     }
 
     addPluginPath(pluginPath) {
         this.debugLog(`Adding plugin path: ${pluginPath}`);
         this.pluginPaths.push(pluginPath);
+    }
+
+    getProcessArguments(scriptPath) {
+        // Increase verbosity for debug
+        const args = [];
+        if (this.customArguments.indexOf('/V') === -1 && this.customArguments.indexOf('-V') === -1) {
+            if (this.debugMode) {
+                args.push('/V4');
+            }
+            else {
+                args.push('/V1');
+            }
+        }
+    
+        args.push(this.customArguments);
+        args.push(`"${path.resolve(scriptPath)}"`);
+
+        return args;
     }
 
     createInstaller(scriptPath) {
@@ -88,19 +106,7 @@ class Installer {
             copyDirectory(pluginPath, nsisPluginPath);
         });
 
-        // Increase verbosity for debug
-        const args = [];
-        if (this.arguments.indexOf('/V') === -1 && this.arguments.indexOf('-V') === -1) {
-            if (this.debugMode) {
-                args.push('/V4');
-            }
-            else {
-                args.push('/V1');
-            }
-        }
-    
-        args.push(this.arguments);
-        args.push(`"${path.resolve(scriptPath)}"`);
+        const args = this.getProcessArguments(scriptPath);
     
         const nsis3Exe = path.join(nsisInstallPath, 'makensis.exe');
         const makeCommand = `"${nsis3Exe}" ${args.join(' ')}`;

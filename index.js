@@ -14,7 +14,7 @@ const getBoolean = (value) => {
 try {
     const debugMode = getBoolean(process.env.debug);
     const installer = new Installer(debugMode);
-    installer.setArguments(core.getInput('arguments'));
+    installer.setCustomArguments(core.getInput('arguments'));
 
     core.getInput('additional-plugin-paths')
         .split(/\n?\r/)
