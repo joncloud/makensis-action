@@ -6,13 +6,58 @@ inputs:
     required: false
     default: 'install.nsi'
 
-  arguments:
-    description: 'Arguments to makensis.exe'
+  additional-plugin-paths:
+    description: 'Newline-delimited list of paths to load plugins from'
     required: false
     default: ''
 
-  additional-plugin-paths:
-    description: 'Newline-delimited list of paths to load plugins from'
+  compiler-process-priority:
+    description: 'Sets the compiler process priority, where x is 5=realtime,4=high,3=above normal,2=normal,1=below normal,0=idle'
+    required: false
+    default: ''
+
+  verbosity:
+    description: 'Sets the verbosity where x is 4=all,3=no script,2=no info,1=no warnings,0=none'
+    required: false
+    default: '1'
+
+  warnings-as-errors:
+    description: 'Treats warnings as errors <false|true>'
+    required: false
+    default: 'false'
+
+  compiler-output-file-path:
+    description: 'Specifies a text file to log compiler output (default is stdout) <false|true>'
+    required: false
+    default: 'false'
+
+  no-config:
+    description: 'Disables the inclusion of <path to makensis.exe>\nsisconf.nsh <false|true>'
+    required: false
+    default: 'false'
+
+  no-cd:
+    description: 'Disables the current directory change to that of the .nsi file <false|true>'
+    required: false
+    default: 'false'
+
+  input-charset:
+    description: 'Sets the input charset <ACP|OEM|CP#|UTF8|UTF16<LE|BE>>'
+    required: false
+    default: ''
+
+  output-charset:
+    description: 'Sets the output charset <ACP|OEM|CP#|UTF8[SIG]|UTF16<LE|BE>[BOM]>'
+    required: false
+    default: ''
+
+  preprocess-output:
+    description: 'Preprocesses script only <false|true|safe>'
+    required: false
+    default: 'false'
+
+  arguments:
+    description: 'Additional custom arguments to makensis'
     required: false
     default: ''
 

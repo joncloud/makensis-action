@@ -50,6 +50,15 @@ class Installer {
         this.debugMode = debugMode;
         this.pluginPaths = [];
         this.customArguments = '';
+        this.compilerProcessPriority = '';
+        this.verbosity = '1';
+        this.warningsAsErrors = false;
+        this.compilerOutputFilePath = '';
+        this.noConfig = false;
+        this.noCd = false;
+        this.inputCharset = '';
+        this.outputCharset = '';
+        this.preprocessOutput = 'false';
     }
 
     debugLog(msg) {
@@ -72,20 +81,88 @@ class Installer {
         this.pluginPaths.push(pluginPath);
     }
 
+    setCompilerProcessPriority(value) {
+        this.debugLog(`Settings compiler process priority: ${value}`);
+        this.compilerProcessPriority = value;
+    }
+
+    setVerbosity(value) {
+        this.debugLog(`Settings verbosity: ${value}`);
+        this.verbosity = value;
+    }
+
+    setWarningsAsErrors(value) {
+        this.debugLog(`Settings warnings as errors: ${value}`);
+        this.warningsAsErrors = value;
+    }
+
+    setCompilerOutputFilePath(value) {
+        this.debugLog(`Settings compiler output file path: ${value}`);
+        this.compilerOutputFilePath = value;
+    }
+
+    setNoConfig(value) {
+        this.debugLog(`Settings no config: ${value}`);
+        this.noConfig = value;
+    }
+
+    setNoCd(value) {
+        this.debugLog(`Settings no cd: ${value}`);
+        this.noCd = value;
+    }
+
+    setInputCharset(value) {
+        this.debugLog(`Settings input charset: ${value}`);
+        this.inputCharset = value;
+    }
+
+    setOutputCharset(value) {
+        this.debugLog(`Settings output charset: ${value}`);
+        this.outputCharset = value;
+    }
+
+    setPreprocessOutput(value) {
+        this.debugLog(`Settings preprocess output: ${value}`);
+        this.preprocessOutput = value;
+    }
+
     getProcessArguments(scriptPath) {
         // Increase verbosity for debug
         const args = [];
-        if (this.customArguments.indexOf('/V') === -1 && this.customArguments.indexOf('-V') === -1) {
-            if (this.debugMode) {
-                args.push('/V4');
+        const add = (val, fn) => {
+            if (!val) {
+                return;
             }
-            else {
-                args.push('/V1');
+
+            val = fn(val);
+            if (!val) {
+                return;
             }
-        }
-    
-        args.push(this.customArguments);
-        args.push(`"${path.resolve(scriptPath)}"`);
+
+            args.push(val);
+        };
+
+        add(this.compilerProcessPriority, val => `-P${val}`);
+        add(this.verbosity, val => `-V${val}`);
+        add(this.warningsAsErrors, _ => '-WX');
+        add(this.compilerOutputFilePath, val => `-O${val}`);
+        add(this.noConfig, _ => '-NOCONFIG');
+        add(this.noCd, _ => '-NOCD');
+        add(this.inputCharset, val => `-INPUTCHARSET ${val}`);
+        add(this.outputCharset, val => `-OUTPUTCHARSET ${val}`);
+        add(this.preprocessOutput, val => {
+            switch (val) {
+                case 'true':
+                    return '-PPO';
+                case 'safe':
+                    return '-SAFEPPO';
+                default:
+                    return '';
+            }
+        });
+
+        add(this.customArguments, val => val);
+        add(scriptPath, val => `"${path.resolve(val)}"`);
 
         return args;
     }
