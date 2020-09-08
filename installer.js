@@ -1,6 +1,7 @@
 const fs = require('fs');
 const { execSync } = require('child_process');
 const path = require('path');
+const nsisPaths = require('./nsisPaths');
 
 const isDirectory = (item) => {
     const stats = fs.statSync(item);
@@ -37,12 +38,6 @@ const copyDirectory = (src, dest) => {
             );
         }
     });
-};
-
-const nsisInstallPath = path.join('C:', 'Program Files (x86)', 'NSIS');
-
-const installerPathExists = () => {
-    return fs.existsSync(nsisInstallPath);
 };
 
 class Installer {
@@ -91,24 +86,20 @@ class Installer {
     }
 
     createInstaller(scriptPath) {
-        if (!installerPathExists()) {
-            const installerPathMessage = `Installer path does not exist at ${nsisInstallPath}`;
-            this.debugLog(installerPathMessage);
-            throw new Error(installerPathMessage);
-        }
-
         console.log(`Creating installer for: ${scriptPath}`);
 
         // Include any of the plugins that may have been requested.
-        const nsisPluginPath = path.join(nsisInstallPath, 'plugins');
-        this.pluginPaths.forEach(pluginPath => {
-            console.log('Including plugin path', pluginPath);
-            copyDirectory(pluginPath, nsisPluginPath);
-        });
+        if (this.pluginPaths.length) {
+            const nsisPluginPath = nsisPaths.getPluginsPath();
+            this.pluginPaths.forEach(pluginPath => {
+                console.log('Including plugin path', pluginPath);
+                copyDirectory(pluginPath, nsisPluginPath);
+            });
+        }
 
         const args = this.getProcessArguments(scriptPath);
     
-        const nsis3Exe = path.join(nsisInstallPath, 'makensis.exe');
+        const nsis3Exe = nsisPaths.getMakensisPath();
         const makeCommand = `"${nsis3Exe}" ${args.join(' ')}`;
         this.debugLog(`Running ${makeCommand}`);
         const process = execSync(makeCommand);
