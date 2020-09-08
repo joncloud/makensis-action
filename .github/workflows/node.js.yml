@@ -32,4 +32,8 @@ jobs:
       run: brew update && brew install makensis
       if: ${{ matrix.os == 'macos-latest' }}
 
+    - name: 'Clean up permissions'
+      if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
+      run: sudo chown -R $(whoami) .
+
     - run: npm test
