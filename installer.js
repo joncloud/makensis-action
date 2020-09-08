@@ -72,10 +72,10 @@ class Installer {
         const args = [];
         if (this.customArguments.indexOf('/V') === -1 && this.customArguments.indexOf('-V') === -1) {
             if (this.debugMode) {
-                args.push('/V4');
+                args.push('-V4');
             }
             else {
-                args.push('/V1');
+                args.push('-V1');
             }
         }
     
