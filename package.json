@@ -17,6 +17,9 @@
     "url": "https://github.com/joncloud/nsis-action/issues"
   },
   "homepage": "https://github.com/joncloud/nsis-action#readme",
+  "engines": {
+    "node": ">=10.0.0 <15.0.0"
+  },
   "dependencies": {
     "@actions/core": "^1.2.2",
     "@actions/github": "^2.1.0"
