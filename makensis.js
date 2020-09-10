@@ -22,7 +22,8 @@ const getWin32Path = () => {
 const getLinuxPath = () => {
     const evaluationPaths = env.PATH.split(':').concat([
         '/usr/local/bin',
-        '/usr/bin'
+        '/usr/bin',
+        '/opt/local/bin'
     ]).map(p => path.join(p, 'makensis'));
 
     return firstValidPath(evaluationPaths);
