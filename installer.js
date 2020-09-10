@@ -1,7 +1,6 @@
 const fs = require('fs');
-const { execSync } = require('child_process');
 const path = require('path');
-const nsisPaths = require('./nsisPaths');
+const makensis = require('./makensis');
 
 const isDirectory = (item) => {
     const stats = fs.statSync(item);
@@ -90,19 +89,24 @@ class Installer {
 
         // Include any of the plugins that may have been requested.
         if (this.pluginPaths.length) {
-            const nsisPluginPath = nsisPaths.getPluginsPath();
+            const nsisdir = makensis.getSymbols().NSISDIR;
+            if (!nsisdir) {
+                throw new Error('Unable to determine NSISDIR. Check makensis -HDRINFO output');
+            }
+            const nsisPluginPath = path.join(nsisdir, 'Plugins');
+            this.debugLog(`Using system Plugins path ${nsisPluginPath}`);
+            
             this.pluginPaths.forEach(pluginPath => {
                 console.log('Including plugin path', pluginPath);
                 copyDirectory(pluginPath, nsisPluginPath);
             });
         }
 
-        const args = this.getProcessArguments(scriptPath);
-    
-        const nsis3Exe = nsisPaths.getMakensisPath();
-        const makeCommand = `"${nsis3Exe}" ${args.join(' ')}`;
-        this.debugLog(`Running ${makeCommand}`);
-        const process = execSync(makeCommand);
+        const args = this.getProcessArguments(scriptPath)
+            .join(' ');
+
+        this.debugLog(`Running ${args}`);
+        const _ = makensis.execSync(args);
     }
 };
 
