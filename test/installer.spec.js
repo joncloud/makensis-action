@@ -33,7 +33,13 @@ describe('Installer', () => {
                     fn(target);
                 }
 
-                await target.createInstallerAsync(`./test/${script}.nsi`);
+                try {
+                    await target.createInstallerAsync(`./test/${script}.nsi`);
+                }
+                catch (err) {
+                    console.error(err);
+                    throw err;
+                }
     
                 const actual = await existsAsync(`./test/${script}.exe`);
     
