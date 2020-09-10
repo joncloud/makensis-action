@@ -1,29 +1,29 @@
-const { promisify } = require('util');
-
-const fs = require('fs');
-const statAsync = promisify(fs.stat);
-const existsAsync = promisify(fs.exists);
-const mkdirAsync = promisify(fs.mkdir);
-const readdirAsync = promisify(fs.readdir);
-const copyFileAsync = promisify(fs.copyFile);
+const fs = require('fs').promises;
+const { F_OK } = require('fs').constants;
 
 const path = require('path');
 const makensis = require('./makensis');
 
 const isDirectoryAsync = async (item) => {
-    const stats = await statAsync(item);
+    const stats = await fs.stat(item);
     
     return stats.isDirectory();
 };
 
+const fileExists = async (item) => {
+    return await fs.access(item, F_OK)
+        .then(() => true)
+        .catch(() => false);
+}
+
 const copyDirectoryAsync = async (src, dest) => {
     console.log('copyDirectory', src, dest);
 
-    if (!await existsAsync(dest)) {
-        await mkdirAsync(dest);
+    if (!await fileExists(dest)) {
+        await fs.mkdir(dest);
     }
 
-    const items = await readdirAsync(src);
+    const items = await fs.readdir(src);
     const promises = items.map(async item => {
         const name = path.basename(item);
         const srcPath = path.join(src, name);
@@ -39,7 +39,7 @@ const copyDirectoryAsync = async (src, dest) => {
                 srcPath,
                 path.join(dest, name)
             );
-            await copyFileAsync(
+            await fs.copyFile(
                 srcPath,
                 path.join(dest, name)
             );
