@@ -32,8 +32,8 @@ jobs:
       run: brew update && brew install makensis
       if: ${{ matrix.os == 'macos-latest' }}
 
-    - run: npm test
-      if: ${{ matrix.os == 'windows-latest' }}
+    - name: 'Set Plugin permissions'
+      run: sudo chown -R $(whoami) /usr/share/nsis/Plugins/
+      if: ${{ matrix.os == 'ubuntu-20.04' }}
 
-    - run: sudo npm test
-      if: ${{ matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-latest' }}
+    - run: npm test
