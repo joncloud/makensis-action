@@ -33,3 +33,7 @@ jobs:
       if: ${{ matrix.os == 'macos-latest' }}
 
     - run: npm test
+      if: ${{ matrix.os == 'windows-latest' }}
+
+    - run: sudo npm test
+      if: ${{ matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-latest' }}
