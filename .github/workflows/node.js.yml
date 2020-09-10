@@ -32,8 +32,4 @@ jobs:
       run: brew update && brew install makensis
       if: ${{ matrix.os == 'macos-latest' }}
 
-    - name: 'Clean up'
-      if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
-      run: rm -rf node_modules && npm install
-
     - run: npm test
