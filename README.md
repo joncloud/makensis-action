@@ -7,13 +7,14 @@ This codebase was ported from the Azure DevOps Extension [dev-maxima/nsis-extens
 [dev-maxima/nsis-extension]: https://github.com/dev-maxima/nsis-extension
 
 ## Platforms
-### Windows
-Windows platforms requires makensis to be installed to the `C:\Program Files (x86)\NSIS\` directory, where `makensis.exe` and `Plugins` exist.
 
-### Linux and macOS
-Linux and macOS require the following paths to exist:
-* makensis must exist at `/usr/local/bin/makensis` or `/usr/bin/makensis`
-* Plugins must exist at `/usr/local/share/nsis`
+This action looks for `makensis` or `makensis.exe` in the environment path, and if not found it will attempt to look in a couple of different places:
+
+* Windows - `C:\Program Files (x86)\NSIS\`
+* Linux and macOS:
+  * `/usr/local/bin/`
+  * `/usr/bin/`
+  * `/opt/local/bin/`
 
 ## Inputs
 
