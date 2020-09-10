@@ -11,9 +11,13 @@ const isDirectoryAsync = async (item) => {
 };
 
 const fileExists = async (item) => {
-    return await fs.access(item, F_OK)
-        .then(() => true)
-        .catch(() => false);
+    try {
+        await fs.access(item, F_OK)
+    } catch (err) {
+        return false;
+    }
+    
+    return true;
 }
 
 const copyDirectoryAsync = async (src, dest) => {
