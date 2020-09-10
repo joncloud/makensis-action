@@ -3,30 +3,42 @@ const path = require('path');
 const { expect } = require('chai');
 const { Installer } = require('../installer');
 
-const installerExists = () => fs.existsSync('./installsig.exe');
+const unlinkIfExists = (path) => {
+    if (fs.existsSync(path)) {
+        fs.unlinkSync(path);
+    }
+};
 
 describe('Installer', () => {
-    const existingScriptPath = './install.nsi';
+    const existingScriptPath = './test/basic.nsi';
     before(() => {
-        if (installerExists()) {
-            fs.unlinkSync('./installsig.exe');
-        }
+        ['./basic.exe', './with-plugins.exe']
+            .forEach(unlinkIfExists);
     });
 
     describe('createInstaller', () => {
-        it('should create installer for install.nsi', () => {
-            const debugMode = true;
-            const target = new Installer(debugMode);
+        const test = (script, fn) => {
+            it(`should create installer for ${script}.nsi`, () => {
+                const debugMode = true;
+                const target = new Installer(debugMode);
+    
+                if (fn) {
+                    fn(target);
+                }
 
-            target.createInstaller(existingScriptPath);
+                target.createInstaller(`./test/${script}.nsi`);
+    
+                const actual = fs.existsSync(`./test/${script}.exe`);
+    
+                expect(actual).to.equal(
+                    true, 
+                    `Installer \`./test/${script}.exe\` should exist`
+                );
+            });
+        };
 
-            const actual = installerExists();
-
-            expect(actual).to.equal(
-                true, 
-                'Installer `./installsig.exe` should exist'
-            );
-        });
+        test('basic');
+        test('with-plugins', target => target.addPluginPath('./test/EnVar'));
     });
 
     describe('getProcessArguments', () => {

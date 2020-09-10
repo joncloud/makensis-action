@@ -13,7 +13,7 @@
 ;---------------------------------
 ;General
  
-  OutFile "installsig.exe"
+  OutFile "basic.exe"
   ShowInstDetails "nevershow"
   ShowUninstDetails "nevershow"
  
