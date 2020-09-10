@@ -36,7 +36,7 @@ describe('Installer', () => {
 
             const args = target.getProcessArguments(existingScriptPath);
 
-            expect(args).to.contain('/V1');
+            expect(args).to.contain('-V1');
         });
 
         it('should default to all verbosity, given **debug** mode', () => {
@@ -45,7 +45,7 @@ describe('Installer', () => {
 
             const args = target.getProcessArguments(existingScriptPath);
 
-            expect(args).to.contain('/V4');
+            expect(args).to.contain('-V4');
         });
 
         it('should not add verbosity, given /V is in arguments', () => {
@@ -56,7 +56,7 @@ describe('Installer', () => {
 
             const args = target.getProcessArguments(existingScriptPath);
 
-            expect(args).to.not.contain('/V1');
+            expect(args).to.not.contain('-V1');
             expect(args).to.contain('/V2');
         });
 
@@ -68,7 +68,7 @@ describe('Installer', () => {
 
             const args = target.getProcessArguments(existingScriptPath);
 
-            expect(args).to.not.contain('/V1');
+            expect(args).to.not.contain('-V1');
             expect(args).to.contain('-V2');
         });
 
