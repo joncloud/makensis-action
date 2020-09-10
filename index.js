@@ -1,5 +1,5 @@
 const core = require('@actions/core');
-const Installer = require('./installer').Installer;
+const { Installer } = require('./installer');
 
 const getBoolean = (value) => {
     if (!value) {
@@ -11,20 +11,24 @@ const getBoolean = (value) => {
     return value === 'true';
 };
 
-try {
-    const debugMode = getBoolean(process.env.debug);
-    const installer = new Installer(debugMode);
-    installer.setCustomArguments(core.getInput('arguments'));
-
-    core.getInput('additional-plugin-paths')
-        .split(/\n?\r/)
-        .map(pluginPath => pluginPath.trim())
-        .filter(pluginPath => !!pluginPath)
-        .forEach(pluginPath => installer.addPluginPath(pluginPath.trim()));
-
-    installer.createInstaller(
-        core.getInput('script-file')
-    );
-} catch (error) {
-    core.setFailed(error.message);
+const run = async () => {
+    try {
+        const debugMode = getBoolean(process.env.debug);
+        const installer = new Installer(debugMode);
+        installer.setCustomArguments(core.getInput('arguments'));
+    
+        core.getInput('additional-plugin-paths')
+            .split(/\n?\r/)
+            .map(pluginPath => pluginPath.trim())
+            .filter(pluginPath => !!pluginPath)
+            .forEach(pluginPath => installer.addPluginPath(pluginPath.trim()));
+    
+        await installer.createInstallerAsync(
+            core.getInput('script-file')
+        );
+    } catch (error) {
+        core.setFailed(error.message);
+    }
 }
+
+run();

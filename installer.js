@@ -1,26 +1,34 @@
+const { promisify } = require('util');
+
 const fs = require('fs');
+const statAsync = promisify(fs.stat);
+const existsAsync = promisify(fs.exists);
+const mkdirAsync = promisify(fs.mkdir);
+const readdirAsync = promisify(fs.readdir);
+const copyFileAsync = promisify(fs.copyFile);
+
 const path = require('path');
 const makensis = require('./makensis');
 
-const isDirectory = (item) => {
-    const stats = fs.statSync(item);
+const isDirectoryAsync = async (item) => {
+    const stats = await statAsync(item);
     
     return stats.isDirectory();
 };
 
-const copyDirectory = (src, dest) => {
+const copyDirectoryAsync = async (src, dest) => {
     console.log('copyDirectory', src, dest);
 
-    if (!fs.existsSync(dest)) {
-        fs.mkdirSync(dest);
+    if (!await existsAsync(dest)) {
+        await mkdirAsync(dest);
     }
 
-    const items = fs.readdirSync(src);
-    items.forEach(item => {
+    const items = await readdirAsync(src);
+    const promises = items.map(async item => {
         const name = path.basename(item);
         const srcPath = path.join(src, name);
-        if (isDirectory(srcPath)) {
-            copyDirectory(
+        if (await isDirectoryAsync(srcPath)) {
+            await copyDirectoryAsync(
                 srcPath,
                 path.join(dest, name)
             );
@@ -31,12 +39,13 @@ const copyDirectory = (src, dest) => {
                 srcPath,
                 path.join(dest, name)
             );
-            fs.copyFileSync(
+            await copyFileAsync(
                 srcPath,
                 path.join(dest, name)
             );
         }
     });
+    await Promise.all(promises);
 };
 
 class Installer {
@@ -84,29 +93,30 @@ class Installer {
         return args;
     }
 
-    createInstaller(scriptPath) {
+    async createInstallerAsync(scriptPath) {
         console.log(`Creating installer for: ${scriptPath}`);
 
         // Include any of the plugins that may have been requested.
         if (this.pluginPaths.length) {
-            const nsisdir = makensis.getSymbols().NSISDIR;
+            const nsisdir = (await makensis.getSymbolsAsync()).NSISDIR;
             if (!nsisdir) {
                 throw new Error('Unable to determine NSISDIR. Check makensis -HDRINFO output');
             }
             const nsisPluginPath = path.join(nsisdir, 'Plugins');
             this.debugLog(`Using system Plugins path ${nsisPluginPath}`);
             
-            this.pluginPaths.forEach(pluginPath => {
+            const copies = this.pluginPaths.map(pluginPath => {
                 console.log('Including plugin path', pluginPath);
-                copyDirectory(pluginPath, nsisPluginPath);
+                return copyDirectoryAsync(pluginPath, nsisPluginPath);
             });
+            await Promise.all(copies);
         }
 
         const args = this.getProcessArguments(scriptPath)
             .join(' ');
 
         this.debugLog(`Running ${args}`);
-        const _ = makensis.execSync(args);
+        const _ = await makensis.execAsync(args);
     }
 };
 
