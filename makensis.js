@@ -1,7 +1,12 @@
+const { promisify } = require('util');
 const fs = require('fs');
-const { execSync } = require('child_process');
+
+const { exec } = require('child_process');
+const execAsync = promisify(exec);
+
 const path = require('path');
 const { platform, env } = require('process');
+
 
 const firstValidPath = (paths) => {
     const possiblePaths = paths.filter(fs.existsSync);
@@ -31,20 +36,20 @@ const getLinuxPath = () => {
 
 class Makensis {
     constructor(path) {
-        if (!fs.existsSync(path)) {
+        if (!path || !fs.existsSync(path)) {
             throw new Error('Unable to find makensis executable');
         }
         this.path = path;
     }
 
-    execSync(args) {
-        const buffer = execSync(`"${this.path}" ${args}`);
+    async execAsync(args) {
+        const result = await execAsync(`"${this.path}" ${args}`);
 
-        return buffer;
+        return result.stdout;
     }
 
-    getSymbols() {
-        const buffer = this.execSync('-HDRINFO');
+    async getSymbolsAsync() {
+        const buffer = await this.execAsync('-HDRINFO');
         
         // Look for the defined symbols in the output.
         const exp = /Defined symbols: (.*)/g;

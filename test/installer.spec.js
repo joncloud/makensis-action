@@ -1,24 +1,31 @@
-const fs = require('fs');
+const { promisify } = require('util');
+
+const { exists, unlink } = require('fs');
+const existsAsync = promisify(exists);
+const unlinkAsync = promisify(unlink);
+
 const path = require('path');
 const { expect } = require('chai');
 const { Installer } = require('../installer');
 
-const unlinkIfExists = (path) => {
-    if (fs.existsSync(path)) {
-        fs.unlinkSync(path);
+const unlinkIfExistsAsync = async (path) => {
+    if (await existsAsync(path)) {
+        unlinkAsync(path);
     }
 };
 
 describe('Installer', () => {
     const existingScriptPath = './test/basic.nsi';
-    before(() => {
-        ['./basic.exe', './with-plugins.exe']
-            .forEach(unlinkIfExists);
+    before(async () => {
+        const promises = ['./basic.exe', './with-plugins.exe']
+            .map(unlinkIfExistsAsync);
+
+        await Promise.all(promises);
     });
 
     describe('createInstaller', () => {
         const test = (script, fn) => {
-            it(`should create installer for ${script}.nsi`, () => {
+            it(`should create installer for ${script}.nsi`, async () => {
                 const debugMode = true;
                 const target = new Installer(debugMode);
     
@@ -26,9 +33,9 @@ describe('Installer', () => {
                     fn(target);
                 }
 
-                target.createInstaller(`./test/${script}.nsi`);
+                await target.createInstallerAsync(`./test/${script}.nsi`);
     
-                const actual = fs.existsSync(`./test/${script}.exe`);
+                const actual = await existsAsync(`./test/${script}.exe`);
     
                 expect(actual).to.equal(
                     true, 
