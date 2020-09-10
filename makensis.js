@@ -37,7 +37,7 @@ class Makensis {
     }
 
     execSync(args) {
-        const buffer = execSync(`${this.path} ${args}`);
+        const buffer = execSync(`"${this.path}" ${args}`);
 
         return buffer;
     }
