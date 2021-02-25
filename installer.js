@@ -4,13 +4,21 @@ const { F_OK } = require('fs').constants;
 const path = require('path');
 const makensis = require('./makensis');
 
+/**
+ * @param {string} item
+ * @returns {Promise.<boolean>}
+ */
 const isDirectoryAsync = async (item) => {
     const stats = await fs.stat(item);
     
     return stats.isDirectory();
 };
 
-const fileExists = async (item) => {
+/**
+ * @param {string} item
+ * @returns {Promise.<boolean>}
+ */
+const fileExistsAsync = async (item) => {
     try {
         await fs.access(item, F_OK)
     } catch (err) {
@@ -20,10 +28,15 @@ const fileExists = async (item) => {
     return true;
 }
 
+/**
+ * @param {string} src
+ * @param {string} dest
+ * @returns {Promise.<void>}
+ */
 const copyDirectoryAsync = async (src, dest) => {
     console.log('copyDirectory', src, dest);
 
-    if (!await fileExists(dest)) {
+    if (!await fileExistsAsync(dest)) {
         await fs.mkdir(dest);
     }
 
@@ -53,32 +66,55 @@ const copyDirectoryAsync = async (src, dest) => {
 };
 
 class Installer {
+    /**
+     * @param {boolean} debugMode Determines whether or not debug logs should output, and increases default verbosity for NSIS.
+     */
     constructor(debugMode) {
+        /** @private */
         this.debugMode = debugMode;
+        /** @private @type {string[]} */
         this.pluginPaths = [];
+        /** @private */
         this.customArguments = '';
     }
 
+    /**
+     * @private
+     * @param {string} msg The message to output.
+     */
     debugLog(msg) {
         if (this.debugMode) {
             console.log(msg);
         }
     }
 
+    /**
+     * @returns {string}
+     */
     getCustomArguments() {
         return this.customArguments;
     }
 
+    /**
+     * @param {string} value
+     */
     setCustomArguments(value) {
         this.debugLog(`Settings arguments: ${value}`);
         this.customArguments = value;
     }
 
+    /**
+     * @param {string} pluginPath
+     */
     addPluginPath(pluginPath) {
         this.debugLog(`Adding plugin path: ${pluginPath}`);
         this.pluginPaths.push(pluginPath);
     }
 
+    /**
+     * @param {string} scriptPath
+     * @returns {string[]}
+     */
     getProcessArguments(scriptPath) {
         // Increase verbosity for debug
         const args = [];
@@ -97,6 +133,11 @@ class Installer {
         return args;
     }
 
+    /**
+     * Creates a new installer using makensis and the provided scriptPath.
+     * @param {string} scriptPath
+     * @returns {Promise.<void>}
+     */
     async createInstallerAsync(scriptPath) {
         console.log(`Creating installer for: ${scriptPath}`);
 

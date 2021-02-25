@@ -8,6 +8,9 @@ const path = require('path');
 const { expect } = require('chai');
 const { Installer } = require('../installer');
 
+/**
+ * @param {string} path
+ */
 const unlinkIfExistsAsync = async (path) => {
     if (await existsAsync(path)) {
         unlinkAsync(path);
@@ -52,6 +55,29 @@ describe('Installer', () => {
 
         test('basic');
         test('with-plugins', target => target.addPluginPath('./test/EnVar'));
+    });
+
+    describe('getCustomArguments', () => {
+        it('should return blank, given new instance', () => {
+            const debugMode = false;
+            const target = new Installer(debugMode);
+
+            const args = target.getCustomArguments();
+
+            expect(args).to.equal('');
+        });
+
+        it('should return value, given setCustomArguments call', () => {
+            const debugMode = false;
+            const target = new Installer(debugMode);
+            
+            const expected = Math.random().toString();
+            target.setCustomArguments(expected);
+
+            const args = target.getCustomArguments();
+
+            expect(args).to.equal(expected);
+        });
     });
 
     describe('getProcessArguments', () => {

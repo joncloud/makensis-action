@@ -1,6 +1,11 @@
 const core = require('@actions/core');
 const { Installer } = require('./installer');
 
+/**
+ * Converts a string value into a boolean.
+ * @param {string | undefined} value
+ * @throws {Error} Argument value must be falsy, or one of the values 'true' or 'false'.
+ */
 const getBoolean = (value) => {
     if (!value) {
         return false;
@@ -11,6 +16,9 @@ const getBoolean = (value) => {
     return value === 'true';
 };
 
+/**
+ * @returns {Promise.<void>}
+ */
 const run = async () => {
     try {
         const debugMode = getBoolean(process.env.debug);
@@ -27,7 +35,7 @@ const run = async () => {
             core.getInput('script-file')
         );
     } catch (error) {
-        core.setFailed(error.message);
+        core.setFailed(error.message || 'Unexpected error occurred');
     }
 }
 
