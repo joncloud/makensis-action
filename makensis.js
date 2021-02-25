@@ -7,13 +7,20 @@ const execAsync = promisify(exec);
 const path = require('path');
 const { platform, env } = require('process');
 
-
+/**
+ * Returns the first path that exists on disk.
+ * @param {string[]} paths
+ * @returns {string}
+ */
 const firstValidPath = (paths) => {
     const possiblePaths = paths.filter(fs.existsSync);
 
     return possiblePaths.length ? possiblePaths[0] : '';
 };
 
+/**
+ * @returns {string}
+ */
 const getWin32Path = () => {
     const evaluationPaths = env.PATH.split(';').concat([
         path.join('C:', 'Program Files (x86)', 'NSIS')
@@ -24,6 +31,9 @@ const getWin32Path = () => {
     );
 };
 
+/**
+ * @returns {string}
+ */
 const getLinuxPath = () => {
     const evaluationPaths = env.PATH.split(':').concat([
         '/usr/local/bin',
@@ -35,19 +45,36 @@ const getLinuxPath = () => {
 };
 
 class Makensis {
+    /**
+     * @param {string} path
+     * @throws {Error} Argument path is falsy, or the path does not exist on disk.
+     */
     constructor(path) {
         if (!path || !fs.existsSync(path)) {
             throw new Error('Unable to find makensis executable');
         }
+        /** @private @type {string} */
         this.path = path;
     }
 
+    /**
+     * Executes the makensis program, and returns its stdout.
+     * @param {string} args The arguments passed onto the makensis program.
+     * @returns {string}
+     */
     async execAsync(args) {
         const result = await execAsync(`"${this.path}" ${args}`);
 
         return result.stdout;
     }
 
+    /**
+     * @typedef {{
+     *   [name: string]: string | undefined
+     * }} Symbols
+     * @returns {Promise.<Symbols>}
+     * @throws {Error} Given no symbols were output from the makensis -HDRINFO command.
+     */
     async getSymbolsAsync() {
         const buffer = await this.execAsync('-HDRINFO');
         
