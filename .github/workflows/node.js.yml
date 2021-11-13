@@ -36,4 +36,14 @@ jobs:
       run: sudo chown -R $(whoami) /usr/share/nsis/Plugins/
       if: ${{ matrix.os == 'ubuntu-20.04' }}
 
-    - run: npm test
+    - name: 'Test'
+      run: npm test -- --reporter json --reporter-options output=./report-${{ matrix.os }}.json
+
+    - name: 'Publish Tests'
+      uses: 'dorny/test-reporter@v1'
+      # run this step even if previous step failed
+      if: ${{ !env.ACT }} && (success() || failure())
+      with:
+        name: 'Tests ${{ matrix.os }}'
+        path: 'report-${{ matrix.os }}.json'
+        reporter: mocha-json

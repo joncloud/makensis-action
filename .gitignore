@@ -4,3 +4,4 @@ nsis/nsis/
 *.exe
 .DS_Store
 .ionide
+report*.json
