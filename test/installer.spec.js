@@ -1,19 +1,26 @@
-const { promisify } = require('util');
+'use strict';
 
-const { exists, unlink } = require('fs');
-const existsAsync = promisify(exists);
-const unlinkAsync = promisify(unlink);
-
+const { access, unlink } = require('fs/promises');
 const path = require('path');
-const { expect } = require('chai');
+const assert = require('assert');
 const { Installer } = require('../installer');
+
+const exists = async (path) => {
+    try {
+        await access(path);
+        return true;
+    }
+    catch {
+        return false;
+    }
+};
 
 /**
  * @param {string} path
  */
 const unlinkIfExistsAsync = async (path) => {
-    if (await existsAsync(path)) {
-        unlinkAsync(path);
+    if (await exists(path)) {
+        unlink(path);
     }
 };
 
@@ -31,7 +38,7 @@ describe('Installer', () => {
             it(`should create installer for ${script}.nsi`, async () => {
                 const debugMode = true;
                 const target = new Installer(debugMode);
-    
+
                 if (fn) {
                     fn(target);
                 }
@@ -43,11 +50,12 @@ describe('Installer', () => {
                     console.error(err);
                     throw err;
                 }
-    
-                const actual = await existsAsync(`./test/${script}.exe`);
-    
-                expect(actual).to.equal(
-                    true, 
+
+                const actual = await exists(`./test/${script}.exe`);
+
+                assert.strictEqual(
+                    actual,
+                    true,
                     `Installer \`./test/${script}.exe\` should exist`
                 );
             });
@@ -64,19 +72,19 @@ describe('Installer', () => {
 
             const args = target.getCustomArguments();
 
-            expect(args).to.equal('');
+            assert.strictEqual(args, '');
         });
 
         it('should return value, given setCustomArguments call', () => {
             const debugMode = false;
             const target = new Installer(debugMode);
-            
+
             const expected = Math.random().toString();
             target.setCustomArguments(expected);
 
             const args = target.getCustomArguments();
 
-            expect(args).to.equal(expected);
+            assert.strictEqual(args, expected);
         });
     });
 
@@ -87,7 +95,10 @@ describe('Installer', () => {
 
             const args = target.getProcessArguments(existingScriptPath);
 
-            expect(args).to.contain('-V1');
+            assert(
+                args.includes('-V1'),
+                `'${args.join(',')}' should include -V1`
+            );
         });
 
         it('should default to all verbosity, given **debug** mode', () => {
@@ -96,7 +107,10 @@ describe('Installer', () => {
 
             const args = target.getProcessArguments(existingScriptPath);
 
-            expect(args).to.contain('-V4');
+            assert(
+                args.includes('-V4'),
+                `'${args.join(',')}' should include -V4`
+            );
         });
 
         it('should not add verbosity, given /V is in arguments', () => {
@@ -107,8 +121,14 @@ describe('Installer', () => {
 
             const args = target.getProcessArguments(existingScriptPath);
 
-            expect(args).to.not.contain('-V1');
-            expect(args).to.contain('/V2');
+            assert(
+                !args.includes('-V1'),
+                `'${args.join(',')}' should not include -V1`
+            );
+            assert(
+                args.includes('/V2'),
+                `'${args.join(',')}' should include /V2`
+            );
         });
 
         it('should not add verbosity, given -V is in arguments', () => {
@@ -119,8 +139,14 @@ describe('Installer', () => {
 
             const args = target.getProcessArguments(existingScriptPath);
 
-            expect(args).to.not.contain('-V1');
-            expect(args).to.contain('-V2');
+            assert(
+                !args.includes('-V1'),
+                `'${args.join(',')}' should not include -V1`
+            );
+            assert(
+                args.includes('-V2'),
+                `'${args.join(',')}' should include -V2`
+            );
         });
 
         it('should resolve and quote script path', () => {
@@ -132,7 +158,10 @@ describe('Installer', () => {
             const args = target.getProcessArguments(existingScriptPath);
 
             const actualScriptPath = args[args.length - 1];
-            expect(actualScriptPath).to.equal(`"${path.resolve(existingScriptPath)}"`);
+            assert.strictEqual(
+                actualScriptPath,
+                `"${path.resolve(existingScriptPath)}"`
+            );
         });
     });
 });

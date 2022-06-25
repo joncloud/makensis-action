@@ -1,5 +1,7 @@
-const { expect } = require('chai');
-const fs = require('fs');
+'use strict';
+
+const assert = require('assert');
+const fs = require('fs/promises');
 const makensis = require('../makensis');
 
 describe('Makensis', () => {
@@ -7,9 +9,18 @@ describe('Makensis', () => {
         it('should return help information', async () => {
             const output = await makensis.execAsync('-HELP');
 
-            expect(output).to.contain('makensis');
-            expect(output).to.contain('CMDHELP');
-            expect(output).to.contain('VERSION');
+            assert(
+                output.includes('makensis'),
+                `'${output}' should include makensis`
+            );
+            assert(
+                output.includes('CMDHELP'),
+                `'${output}' should include CMDHELP`
+            );
+            assert(
+                output.includes('VERSION'),
+                `'${output}' should include VERSION`
+            );
         });
     });
 
@@ -18,8 +29,12 @@ describe('Makensis', () => {
             const symbols = await makensis.getSymbolsAsync();
 
             const nsisDir = symbols.NSISDIR;
-            expect(nsisDir).to.be.ok;
-            expect(fs.existsSync(nsisDir)).to.be.true;
+            assert(nsisDir, 'NSISDIR should be defined');
+
+            assert.doesNotThrow(
+                () => fs.access(nsisDir),
+                `NSISDIR (${nsisDir}) should exist`
+            );
         });
 
         it('should include the NSIS_VERSION', async () => {
@@ -27,7 +42,7 @@ describe('Makensis', () => {
             const expected = await makensis.execAsync('-VERSION');
 
             const nsisVersion = symbols.NSIS_VERSION;
-            expect(nsisVersion).to.equal(expected);
+            assert.strictEqual(nsisVersion, expected);
         });
     });
 });
