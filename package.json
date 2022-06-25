@@ -18,15 +18,15 @@
   },
   "homepage": "https://github.com/joncloud/nsis-action#readme",
   "engines": {
-    "node": ">=10.0.0 <15.0.0"
+    "node": ">=14.0.0"
   },
   "dependencies": {
-    "@actions/core": "^1.2.6",
-    "@actions/github": "^2.1.0"
+    "@actions/core": "^1.9.0",
+    "@actions/github": "^5.0.3"
   },
   "devDependencies": {
-    "chai": "^4.3.4",
-    "mocha": "^9.1.3",
-    "yaml": "^1.10.0"
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0",
+    "yaml": "^2.1.1"
   }
 }

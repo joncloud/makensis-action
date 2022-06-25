@@ -1,4 +1,7 @@
-const core = require('@actions/core');
+'use strict';
+
+const { getInput } = require('./input');
+const { fail } = require('./output');
 const { Installer } = require('./installer');
 
 /**
@@ -22,20 +25,22 @@ const getBoolean = (value) => {
 const run = async () => {
     try {
         const debugMode = getBoolean(process.env.debug);
+        const {
+            customArguments,
+            additionalPluginPaths,
+            scriptFile,
+        } = getInput();
         const installer = new Installer(debugMode);
-        installer.setCustomArguments(core.getInput('arguments'));
-    
-        core.getInput('additional-plugin-paths')
-            .split(/\n?\r/)
-            .map(pluginPath => pluginPath.trim())
-            .filter(pluginPath => !!pluginPath)
+        installer.setCustomArguments(customArguments);
+
+        additionalPluginPaths
             .forEach(pluginPath => installer.addPluginPath(pluginPath.trim()));
-    
+
         await installer.createInstallerAsync(
-            core.getInput('script-file')
+            scriptFile
         );
     } catch (error) {
-        core.setFailed(error.message || 'Unexpected error occurred');
+        fail(error.message);
     }
 }
 
