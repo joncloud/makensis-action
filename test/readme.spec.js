@@ -1,18 +1,20 @@
-const fs = require('fs');
+'use strict';
+
+const fs = require('fs/promises');
 const YAML = require('yaml');
-const { expect } = require('chai');
+const assert = require('assert');
 
 describe('README', () => {
     let readmeLines = [];
     let action;
 
-    before(() => {
-        readmeLines = fs.readFileSync('./README.md', 'utf8')
+    before(async () => {
+        readmeLines = (await fs.readFile('./README.md', 'utf8'))
             .toString()
             .split(/(?:\r\n|\r|\n)/g);
 
         action = YAML.parse(
-            fs.readFileSync('./action.yml', 'utf8')
+            await fs.readFile('./action.yml', 'utf8')
         );
     });
 
@@ -25,7 +27,8 @@ describe('README', () => {
             return null;
         }).filter(x => !!x).sort();
 
-        expect(inputs).to.eql(
+        assert.deepStrictEqual(
+            inputs,
             Object.getOwnPropertyNames(action.inputs).sort()
         );
     });
