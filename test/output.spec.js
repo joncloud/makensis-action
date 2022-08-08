@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert');
-const { fail } = require('../output');
+const { fail } = require('../src/output');
 
 describe('output', () => {
   describe('fail', () => {

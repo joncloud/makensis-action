@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert');
-const { getInput } = require('../input');
+const { getInput } = require('../src/input');
 
 describe('input', () => {
   describe('getInput', () => {
