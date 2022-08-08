@@ -4,7 +4,7 @@
   "description": "Nullsoft scriptable install system action",
   "main": "dist/index.js",
   "scripts": {
-    "build": "ncc build -o dist/index.js src/index.js",
+    "build": "ncc build -o dist src/index.js",
     "test": "mocha --reporter spec --timeout 5000"
   },
   "repository": {
