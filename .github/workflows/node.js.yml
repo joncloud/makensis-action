@@ -40,7 +40,7 @@ jobs:
       run: npm ci
 
     - name: 'Test'
-      run: npm test -- --reporter json --reporter-options output=./report-${{ matrix.os }}.json
+      run: npm test -- --reporter json --reporter-options output=${{ runner.temp }}/report-${{ matrix.os }}.json
 
     - name: 'Publish Tests'
       uses: 'dorny/test-reporter@v1'
@@ -48,5 +48,5 @@ jobs:
       if: ${{ !env.ACT }} && (success() || failure())
       with:
         name: 'Tests ${{ matrix.os }}'
-        path: 'report-${{ matrix.os }}.json'
+        path: ${{ runner.temp }}/report-${{ matrix.os }}.json
         reporter: mocha-json
