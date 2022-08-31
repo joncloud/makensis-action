@@ -37,12 +37,16 @@ jobs:
       if: ${{ matrix.os == 'ubuntu-20.04' }}
 
     - name: 'Test'
-      run: npm test -- --reporter json --reporter-options output=./report-${{ matrix.os }}.json
+      run: |
+        npm test -- --reporter json --reporter-options output=./report-${{ matrix.os }}.json
+        cat ./report-${{ matrix.os }}.json | jq
 
     - name: 'Publish Tests'
       uses: 'dorny/test-reporter@v1'
       # run this step even if previous step failed
       if: ${{ !env.ACT }} && (success() || failure())
+      # If this fails, don't worry the JSON output will be printed as a backup.
+      continue-on-error: true
       with:
         name: 'Tests ${{ matrix.os }}'
         path: 'report-${{ matrix.os }}.json'
