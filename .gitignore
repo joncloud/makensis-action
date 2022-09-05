@@ -5,3 +5,4 @@ nsis/nsis/
 .DS_Store
 .ionide
 report*.json
+node_modules/

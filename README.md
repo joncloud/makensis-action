@@ -39,6 +39,10 @@ Newline-delimited list of paths to load plugins from. Default `""`.
     arguments: "/V3"
 ```
 
+## Development
+
+This action needs to be built from the source code located in the `/src` folder. Whenever you make changes, you should run the `npm run build` script. Otherwise, your changes won't be tested by CI.
+
 ## Sample Projects
 
 * [joncloud/makensis-action-test](https://github.com/joncloud/makensis-action-test)

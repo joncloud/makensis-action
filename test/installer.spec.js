@@ -3,7 +3,7 @@
 const { access, unlink } = require('fs/promises');
 const path = require('path');
 const assert = require('assert');
-const { Installer } = require('../installer');
+const { Installer } = require('../src/installer');
 
 const exists = async (path) => {
     try {

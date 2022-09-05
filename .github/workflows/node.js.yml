@@ -36,10 +36,13 @@ jobs:
       run: sudo chown -R $(whoami) /usr/share/nsis/Plugins/
       if: ${{ matrix.os == 'ubuntu-20.04' }}
 
+    - name: 'Install npm dependencies'
+      run: npm ci
+
     - name: 'Test'
       run: |
-        npm test -- --reporter json --reporter-options output=./report-${{ matrix.os }}.json
-        cat ./report-${{ matrix.os }}.json | jq
+        npm test -- --reporter json --reporter-options output=${{ runner.temp }}/report-${{ matrix.os }}.json
+        cat ${{ runner.temp }}/report-${{ matrix.os }}.json | jq
 
     - name: 'Publish Tests'
       uses: 'dorny/test-reporter@v1'
@@ -49,5 +52,5 @@ jobs:
       continue-on-error: true
       with:
         name: 'Tests ${{ matrix.os }}'
-        path: 'report-${{ matrix.os }}.json'
+        path: ${{ runner.temp }}/report-${{ matrix.os }}.json
         reporter: mocha-json

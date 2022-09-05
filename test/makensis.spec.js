@@ -2,7 +2,7 @@
 
 const assert = require('assert');
 const fs = require('fs/promises');
-const makensis = require('../makensis');
+const makensis = require('../src/makensis');
 
 describe('Makensis', () => {
     describe('execAsync', () => {
