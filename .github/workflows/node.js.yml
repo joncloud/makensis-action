@@ -40,9 +40,12 @@ jobs:
       run: npm ci
 
     - name: 'Test'
-      run: |
-        npm test -- --reporter json --reporter-options output=${{ runner.temp }}/report-${{ matrix.os }}.json
-        cat ${{ runner.temp }}/report-${{ matrix.os }}.json | jq
+      run: npm test -- --reporter json --reporter-options output=${{ runner.temp }}/report-${{ matrix.os }}.json
+
+    - name: 'Print Tests'
+      # run this step even if previous step failed
+      if: (success() || failure())
+      run: cat ${{ runner.temp }}/report-${{ matrix.os }}.json | jq
 
     - name: 'Publish Tests'
       uses: 'dorny/test-reporter@v1'
