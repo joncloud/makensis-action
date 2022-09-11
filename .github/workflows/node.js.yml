@@ -55,5 +55,5 @@ jobs:
       continue-on-error: true
       with:
         name: 'Tests ${{ matrix.os }}'
-        path: ${{ runner.temp }}/report-${{ matrix.os }}.json
+        path: ${{ runner.temp }}\report-${{ matrix.os }}.json
         reporter: mocha-json
