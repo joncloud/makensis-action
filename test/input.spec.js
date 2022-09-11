@@ -6,7 +6,7 @@ const { getInput } = require('../src/input');
 describe('input', () => {
   describe('getInput', () => {
     let core;
-    let inputs = { };
+    let inputs = {};
     before(() => {
       core = getInput.core;
       getInput.core = {

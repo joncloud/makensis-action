@@ -2728,9 +2728,9 @@ const makensis = __nccwpck_require__(598);
  * @returns {Promise.<boolean>}
  */
 const isDirectoryAsync = async (item) => {
-    const stats = await fs.stat(item);
-    
-    return stats.isDirectory();
+  const stats = await fs.stat(item);
+
+  return stats.isDirectory();
 };
 
 /**
@@ -2738,13 +2738,13 @@ const isDirectoryAsync = async (item) => {
  * @returns {Promise.<boolean>}
  */
 const fileExistsAsync = async (item) => {
-    try {
-        await fs.access(item, F_OK)
-    } catch (err) {
-        return false;
-    }
-    
-    return true;
+  try {
+    await fs.access(item, F_OK)
+  } catch (err) {
+    return false;
+  }
+
+  return true;
 }
 
 /**
@@ -2753,139 +2753,139 @@ const fileExistsAsync = async (item) => {
  * @returns {Promise.<void>}
  */
 const copyDirectoryAsync = async (src, dest) => {
-    console.log('copyDirectory', src, dest);
+  console.log('copyDirectory', src, dest);
 
-    if (!await fileExistsAsync(dest)) {
-        await fs.mkdir(dest);
+  if (!await fileExistsAsync(dest)) {
+    await fs.mkdir(dest);
+  }
+
+  const items = await fs.readdir(src);
+  const promises = items.map(async item => {
+    const name = path.basename(item);
+    const srcPath = path.join(src, name);
+    if (await isDirectoryAsync(srcPath)) {
+      await copyDirectoryAsync(
+        srcPath,
+        path.join(dest, name)
+      );
     }
-
-    const items = await fs.readdir(src);
-    const promises = items.map(async item => {
-        const name = path.basename(item);
-        const srcPath = path.join(src, name);
-        if (await isDirectoryAsync(srcPath)) {
-            await copyDirectoryAsync(
-                srcPath,
-                path.join(dest, name)
-            );
-        }
-        else {
-            console.log(
-                'copying',
-                srcPath,
-                path.join(dest, name)
-            );
-            await fs.copyFile(
-                srcPath,
-                path.join(dest, name)
-            );
-        }
-    });
-    await Promise.all(promises);
+    else {
+      console.log(
+        'copying',
+        srcPath,
+        path.join(dest, name)
+      );
+      await fs.copyFile(
+        srcPath,
+        path.join(dest, name)
+      );
+    }
+  });
+  await Promise.all(promises);
 };
 
 class Installer {
-    /**
-     * @param {boolean} debugMode Determines whether or not debug logs should output, and increases default verbosity for NSIS.
-     */
-    constructor(debugMode) {
-        /** @private */
-        this.debugMode = debugMode;
-        /** @private @type {string[]} */
-        this.pluginPaths = [];
-        /** @private */
-        this.customArguments = '';
+  /**
+   * @param {boolean} debugMode Determines whether or not debug logs should output, and increases default verbosity for NSIS.
+   */
+  constructor(debugMode) {
+    /** @private */
+    this.debugMode = debugMode;
+    /** @private @type {string[]} */
+    this.pluginPaths = [];
+    /** @private */
+    this.customArguments = '';
+  }
+
+  /**
+   * @private
+   * @param {string} msg The message to output.
+   */
+  debugLog(msg) {
+    if (this.debugMode) {
+      console.log(msg);
+    }
+  }
+
+  /**
+   * @returns {string}
+   */
+  getCustomArguments() {
+    return this.customArguments;
+  }
+
+  /**
+   * @param {string} value
+   */
+  setCustomArguments(value) {
+    this.debugLog(`Settings arguments: ${value}`);
+    this.customArguments = value;
+  }
+
+  /**
+   * @param {string} pluginPath
+   */
+  addPluginPath(pluginPath) {
+    this.debugLog(`Adding plugin path: ${pluginPath}`);
+    this.pluginPaths.push(pluginPath);
+  }
+
+  /**
+   * @param {string} scriptPath
+   * @returns {string[]}
+   */
+  getProcessArguments(scriptPath) {
+    // Increase verbosity for debug
+    const args = [];
+    if (this.customArguments.indexOf('/V') === -1 && this.customArguments.indexOf('-V') === -1) {
+      if (this.debugMode) {
+        args.push('-V4');
+      }
+      else {
+        args.push('-V1');
+      }
     }
 
-    /**
-     * @private
-     * @param {string} msg The message to output.
-     */
-    debugLog(msg) {
-        if (this.debugMode) {
-            console.log(msg);
-        }
+    args.push(this.customArguments);
+    args.push(`"${path.resolve(scriptPath)}"`);
+
+    return args;
+  }
+
+  /**
+   * Creates a new installer using makensis and the provided scriptPath.
+   * @param {string} scriptPath
+   * @returns {Promise.<void>}
+   */
+  async createInstallerAsync(scriptPath) {
+    console.log(`Creating installer for: ${scriptPath}`);
+
+    // Include any of the plugins that may have been requested.
+    if (this.pluginPaths.length) {
+      const nsisdir = (await makensis.getSymbolsAsync()).NSISDIR;
+      if (!nsisdir) {
+        throw new Error('Unable to determine NSISDIR. Check makensis -HDRINFO output');
+      }
+      const nsisPluginPath = path.join(nsisdir, 'Plugins');
+      this.debugLog(`Using system Plugins path ${nsisPluginPath}`);
+
+      const copies = this.pluginPaths.map(pluginPath => {
+        console.log('Including plugin path', pluginPath);
+        return copyDirectoryAsync(pluginPath, nsisPluginPath);
+      });
+      await Promise.all(copies);
     }
 
-    /**
-     * @returns {string}
-     */
-    getCustomArguments() {
-        return this.customArguments;
-    }
+    const args = this.getProcessArguments(scriptPath)
+      .join(' ');
 
-    /**
-     * @param {string} value
-     */
-    setCustomArguments(value) {
-        this.debugLog(`Settings arguments: ${value}`);
-        this.customArguments = value;
-    }
-
-    /**
-     * @param {string} pluginPath
-     */
-    addPluginPath(pluginPath) {
-        this.debugLog(`Adding plugin path: ${pluginPath}`);
-        this.pluginPaths.push(pluginPath);
-    }
-
-    /**
-     * @param {string} scriptPath
-     * @returns {string[]}
-     */
-    getProcessArguments(scriptPath) {
-        // Increase verbosity for debug
-        const args = [];
-        if (this.customArguments.indexOf('/V') === -1 && this.customArguments.indexOf('-V') === -1) {
-            if (this.debugMode) {
-                args.push('-V4');
-            }
-            else {
-                args.push('-V1');
-            }
-        }
-    
-        args.push(this.customArguments);
-        args.push(`"${path.resolve(scriptPath)}"`);
-
-        return args;
-    }
-
-    /**
-     * Creates a new installer using makensis and the provided scriptPath.
-     * @param {string} scriptPath
-     * @returns {Promise.<void>}
-     */
-    async createInstallerAsync(scriptPath) {
-        console.log(`Creating installer for: ${scriptPath}`);
-
-        // Include any of the plugins that may have been requested.
-        if (this.pluginPaths.length) {
-            const nsisdir = (await makensis.getSymbolsAsync()).NSISDIR;
-            if (!nsisdir) {
-                throw new Error('Unable to determine NSISDIR. Check makensis -HDRINFO output');
-            }
-            const nsisPluginPath = path.join(nsisdir, 'Plugins');
-            this.debugLog(`Using system Plugins path ${nsisPluginPath}`);
-            
-            const copies = this.pluginPaths.map(pluginPath => {
-                console.log('Including plugin path', pluginPath);
-                return copyDirectoryAsync(pluginPath, nsisPluginPath);
-            });
-            await Promise.all(copies);
-        }
-
-        const args = this.getProcessArguments(scriptPath)
-            .join(' ');
-
-        this.debugLog(`Running ${args}`);
-        const _ = await makensis.execAsync(args);
-    }
+    this.debugLog(`Running ${args}`);
+    const _ = await makensis.execAsync(args);
+  }
 };
 
 module.exports = {
-    Installer
+  Installer
 };
 
 
@@ -2909,102 +2909,102 @@ const { platform, env } = __nccwpck_require__(282);
  * @returns {string}
  */
 const firstValidPath = (paths) => {
-    const possiblePaths = paths.filter(fs.existsSync);
+  const possiblePaths = paths.filter(fs.existsSync);
 
-    return possiblePaths.length ? possiblePaths[0] : '';
+  return possiblePaths.length ? possiblePaths[0] : '';
 };
 
 /**
  * @returns {string}
  */
 const getWin32Path = () => {
-    const evaluationPaths = env.PATH.split(';').concat([
-        path.join('C:', 'Program Files (x86)', 'NSIS')
-    ]).map(p => path.join(p, 'makensis.exe'));
+  const evaluationPaths = env.PATH.split(';').concat([
+    path.join('C:', 'Program Files (x86)', 'NSIS')
+  ]).map(p => path.join(p, 'makensis.exe'));
 
-    return firstValidPath(
-        evaluationPaths
-    );
+  return firstValidPath(
+    evaluationPaths
+  );
 };
 
 /**
  * @returns {string}
  */
 const getLinuxPath = () => {
-    const evaluationPaths = env.PATH.split(':').concat([
-        '/usr/local/bin',
-        '/usr/bin',
-        '/opt/local/bin'
-    ]).map(p => path.join(p, 'makensis'));
+  const evaluationPaths = env.PATH.split(':').concat([
+    '/usr/local/bin',
+    '/usr/bin',
+    '/opt/local/bin'
+  ]).map(p => path.join(p, 'makensis'));
 
-    return firstValidPath(evaluationPaths);
+  return firstValidPath(evaluationPaths);
 };
 
 class Makensis {
-    /**
-     * @param {string} path
-     * @throws {Error} Argument path is falsy, or the path does not exist on disk.
-     */
-    constructor(path) {
-        if (!path || !fs.existsSync(path)) {
-            throw new Error('Unable to find makensis executable');
-        }
-        /** @private @type {string} */
-        this.path = path;
+  /**
+   * @param {string} path
+   * @throws {Error} Argument path is falsy, or the path does not exist on disk.
+   */
+  constructor(path) {
+    if (!path || !fs.existsSync(path)) {
+      throw new Error('Unable to find makensis executable');
+    }
+    /** @private @type {string} */
+    this.path = path;
+  }
+
+  /**
+   * Executes the makensis program, and returns its stdout.
+   * @param {string} args The arguments passed onto the makensis program.
+   * @returns {string}
+   */
+  async execAsync(args) {
+    const result = await execAsync(`"${this.path}" ${args}`);
+
+    return result.stdout;
+  }
+
+  /**
+   * @typedef {{
+   *   [name: string]: string | undefined
+   * }} Symbols
+   * @returns {Promise.<Symbols>}
+   * @throws {Error} Given no symbols were output from the makensis -HDRINFO command.
+   */
+  async getSymbolsAsync() {
+    const buffer = await this.execAsync('-HDRINFO');
+
+    // Look for the defined symbols in the output.
+    const exp = /Defined symbols: (.*)/g;
+    const matches = exp.exec(buffer.toString('utf-8'));
+    if (!matches || !matches.length || matches.length < 2) {
+      throw new Error('Unable to get symbols');
     }
 
-    /**
-     * Executes the makensis program, and returns its stdout.
-     * @param {string} args The arguments passed onto the makensis program.
-     * @returns {string}
-     */
-    async execAsync(args) {
-        const result = await execAsync(`"${this.path}" ${args}`);
+    // Create a map of all of the symbols.
+    const symbols = {};
 
-        return result.stdout;
-    }
+    // Get all of the symbols, which are comma delimited
+    // keys or key value pairs separated by =.
+    matches[1].split(',').forEach(text => {
+      const index = text.indexOf('=');
+      if (index === -1) {
+        symbols[text] = '';
+      }
+      else {
+        const name = text.substr(0, index);
+        const value = text.substr(index + 1);
+        symbols[name] = value;
+      }
+    });
 
-    /**
-     * @typedef {{
-     *   [name: string]: string | undefined
-     * }} Symbols
-     * @returns {Promise.<Symbols>}
-     * @throws {Error} Given no symbols were output from the makensis -HDRINFO command.
-     */
-    async getSymbolsAsync() {
-        const buffer = await this.execAsync('-HDRINFO');
-        
-        // Look for the defined symbols in the output.
-        const exp = /Defined symbols: (.*)/g;
-        const matches = exp.exec(buffer.toString('utf-8'));
-        if (!matches || !matches.length || matches.length < 2) {
-            throw new Error('Unable to get symbols');
-        }
-        
-        // Create a map of all of the symbols.
-        const symbols = { };
-
-        // Get all of the symbols, which are comma delimited
-        // keys or key value pairs separated by =.
-        matches[1].split(',').forEach(text => {
-            const index = text.indexOf('=');
-            if (index === -1) {
-                symbols[text] = '';
-            }
-            else {
-                const name = text.substr(0, index);
-                const value = text.substr(index + 1);
-                symbols[name] = value;
-            }
-        });
-
-        return symbols;
-    }
+    return symbols;
+  }
 }
 
 const makensisPath = platform === 'win32'
-    ? getWin32Path()
-    : getLinuxPath();
+  ? getWin32Path()
+  : getLinuxPath();
 
 module.exports = new Makensis(makensisPath);
 
@@ -3194,38 +3194,38 @@ const { Installer } = __nccwpck_require__(127);
  * @throws {Error} Argument value must be falsy, or one of the values 'true' or 'false'.
  */
 const getBoolean = (value) => {
-    if (!value) {
-        return false;
-    }
-    if (value !== 'true' && value !== 'false') {
-        throw new Error(`Input must be boolean value 'true' or 'false' but got '${value}'`);
-    }
-    return value === 'true';
+  if (!value) {
+    return false;
+  }
+  if (value !== 'true' && value !== 'false') {
+    throw new Error(`Input must be boolean value 'true' or 'false' but got '${value}'`);
+  }
+  return value === 'true';
 };
 
 /**
  * @returns {Promise.<void>}
  */
 const run = async () => {
-    try {
-        const debugMode = getBoolean(process.env.debug);
-        const {
-            customArguments,
-            additionalPluginPaths,
-            scriptFile,
-        } = getInput();
-        const installer = new Installer(debugMode);
-        installer.setCustomArguments(customArguments);
+  try {
+    const debugMode = getBoolean(process.env.debug);
+    const {
+      customArguments,
+      additionalPluginPaths,
+      scriptFile,
+    } = getInput();
+    const installer = new Installer(debugMode);
+    installer.setCustomArguments(customArguments);
 
-        additionalPluginPaths
-            .forEach(pluginPath => installer.addPluginPath(pluginPath.trim()));
+    additionalPluginPaths
+      .forEach(pluginPath => installer.addPluginPath(pluginPath.trim()));
 
-        await installer.createInstallerAsync(
-            scriptFile
-        );
-    } catch (error) {
-        fail(error.message);
-    }
+    await installer.createInstallerAsync(
+      scriptFile
+    );
+  } catch (error) {
+    fail(error.message);
+  }
 }
 
 run();

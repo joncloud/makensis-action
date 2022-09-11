@@ -5,31 +5,31 @@ const YAML = require('yaml');
 const assert = require('assert');
 
 describe('README', () => {
-    let readmeLines = [];
-    let action;
+  let readmeLines = [];
+  let action;
 
-    before(async () => {
-        readmeLines = (await fs.readFile('./README.md', 'utf8'))
-            .toString()
-            .split(/(?:\r\n|\r|\n)/g);
+  before(async () => {
+    readmeLines = (await fs.readFile('./README.md', 'utf8'))
+      .toString()
+      .split(/(?:\r\n|\r|\n)/g);
 
-        action = YAML.parse(
-            await fs.readFile('./action.yml', 'utf8')
-        );
-    });
+    action = YAML.parse(
+      await fs.readFile('./action.yml', 'utf8')
+    );
+  });
 
-    it('should list all inputs', () => {
-        const inputs = readmeLines.map(line => {
-            const captures = /### `([^`]+)`/.exec(line);
-            if (captures && captures.length) {
-                return captures[1];
-            }
-            return null;
-        }).filter(x => !!x).sort();
+  it('should list all inputs', () => {
+    const inputs = readmeLines.map(line => {
+      const captures = /### `([^`]+)`/.exec(line);
+      if (captures && captures.length) {
+        return captures[1];
+      }
+      return null;
+    }).filter(x => !!x).sort();
 
-        assert.deepStrictEqual(
-            inputs,
-            Object.getOwnPropertyNames(action.inputs).sort()
-        );
-    });
+    assert.deepStrictEqual(
+      inputs,
+      Object.getOwnPropertyNames(action.inputs).sort()
+    );
+  });
 });
