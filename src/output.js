@@ -1,17 +1,13 @@
 'use strict';
 
-const core = require('@actions/core');
+import { setFailed } from '@actions/core';
 
 /**
  * @param {(string | Error)?} error
  */
-const fail = (error) => {
-  fail.core.setFailed(error || fail.genericErrorMessage);
+export const fail = (error) => {
+  fail.setFailed(error || fail.genericErrorMessage);
 };
 
-fail.core = core;
+fail.setFailed = setFailed;
 fail.genericErrorMessage = 'Unexpected error occurred';
-
-module.exports = {
-  fail,
-};

@@ -3,9 +3,11 @@
   "version": "3.0.0",
   "description": "Nullsoft scriptable install system action",
   "main": "dist/index.js",
+  "type": "module",
   "scripts": {
-    "build": "ncc build -o dist src/index.js",
-    "test": "mocha --reporter spec --timeout 5000 test/**.spec.js"
+    "build": "esbuild src/index.js --bundle --platform=node --target=node16 --minify --outfile=dist/index.cjs",
+    "test": "mocha --reporter spec --timeout 5000 test/**.spec.js",
+    "test:watch": "mocha --reporter spec --timeout 5000 --watch --watch-files **/*.js test/**.spec.js"
   },
   "repository": {
     "type": "git",
@@ -19,15 +21,15 @@
   },
   "homepage": "https://github.com/joncloud/nsis-action#readme",
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=16.0.0"
   },
   "dependencies": {
-    "@actions/core": "^1.9.1",
-    "@actions/github": "^5.0.3"
+    "@actions/core": "^1.10.0",
+    "@actions/github": "^5.1.1"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.34.0",
-    "mocha": "^10.0.0",
-    "yaml": "^2.1.1"
+    "esbuild": "^0.17.4",
+    "mocha": "^10.2.0",
+    "yaml": "^2.2.1"
   }
 }

@@ -1,13 +1,13 @@
 'use strict';
 
-const { access, unlink } = require('fs/promises');
-const path = require('path');
-const assert = require('assert');
-const { Installer } = require('../src/installer');
+import { access, unlink } from 'fs/promises';
+import { resolve } from 'path';
+import assert from 'assert';
+import { Installer } from '../src/installer';
 
-const exists = async (path) => {
+const exists = async (p) => {
   try {
-    await access(path);
+    await access(p);
     return true;
   }
   catch {
@@ -16,11 +16,11 @@ const exists = async (path) => {
 };
 
 /**
- * @param {string} path
+ * @param {string} p
  */
-const unlinkIfExistsAsync = async (path) => {
-  if (await exists(path)) {
-    unlink(path);
+const unlinkIfExistsAsync = async (p) => {
+  if (await exists(p)) {
+    unlink(p);
   }
 };
 
@@ -160,7 +160,7 @@ describe('Installer', () => {
       const actualScriptPath = args[args.length - 1];
       assert.strictEqual(
         actualScriptPath,
-        `"${path.resolve(existingScriptPath)}"`
+        `"${resolve(existingScriptPath)}"`
       );
     });
   });

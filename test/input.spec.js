@@ -1,20 +1,18 @@
 'use strict';
 
-const assert = require('assert');
-const { getInput } = require('../src/input');
+import assert from 'assert';
+import { getInput } from '../src/input';
 
 describe('input', () => {
   describe('getInput', () => {
-    let core;
+    let coreGetInput;
     let inputs = {};
     before(() => {
-      core = getInput.core;
-      getInput.core = {
-        getInput: key => inputs[key] ?? '',
-      };
+      coreGetInput = getInput.coreGetInput;
+      getInput.coreGetInput = key => inputs[key] ?? '';
     });
     after(() => {
-      getInput.core = core;
+      getInput.core = coreGetInput;
     })
 
     it('should assign customArguments, given \'arguments\'', () => {

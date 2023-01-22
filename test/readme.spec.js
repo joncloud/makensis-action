@@ -1,20 +1,20 @@
 'use strict';
 
-const fs = require('fs/promises');
-const YAML = require('yaml');
-const assert = require('assert');
+import { readFile } from 'fs/promises';
+import { parse } from 'yaml';
+import assert from 'assert';
 
 describe('README', () => {
   let readmeLines = [];
   let action;
 
   before(async () => {
-    readmeLines = (await fs.readFile('./README.md', 'utf8'))
+    readmeLines = (await readFile('./README.md', 'utf8'))
       .toString()
       .split(/(?:\r\n|\r|\n)/g);
 
-    action = YAML.parse(
-      await fs.readFile('./action.yml', 'utf8')
+    action = parse(
+      await readFile('./action.yml', 'utf8')
     );
   });
 

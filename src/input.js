@@ -1,6 +1,6 @@
 'use strict';
 
-const core = require('@actions/core');
+import { getInput as coreGetInput } from '@actions/core';
 
 /**
  * @typedef {{
@@ -10,15 +10,15 @@ const core = require('@actions/core');
  * }} Input
  * @returns {Input}
  */
-const getInput = () => {
-  const customArguments = getInput.core.getInput('arguments');
+export const getInput = () => {
+  const customArguments = getInput.coreGetInput('arguments');
 
-  const additionalPluginPaths = getInput.core.getInput('additional-plugin-paths')
+  const additionalPluginPaths = getInput.coreGetInput('additional-plugin-paths')
     .split(/\n|\r/)
     .map(pluginPath => pluginPath.trim())
     .filter(pluginPath => !!pluginPath);
 
-  const scriptFile = getInput.core.getInput('script-file');
+  const scriptFile = getInput.coreGetInput('script-file');
 
   return {
     customArguments,
@@ -26,8 +26,4 @@ const getInput = () => {
     scriptFile,
   }
 };
-getInput.core = core;
-
-module.exports = {
-  getInput,
-};
+getInput.coreGetInput = coreGetInput;

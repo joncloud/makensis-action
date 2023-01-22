@@ -1,8 +1,8 @@
 'use strict';
 
-const { getInput } = require('./input');
-const { fail } = require('./output');
-const { Installer } = require('./installer');
+import { getInput } from './input';
+import { fail } from './output';
+import { Installer } from './installer';
 
 /**
  * Converts a string value into a boolean.
@@ -44,4 +44,4 @@ const run = async () => {
   }
 }
 
-run();
+run().then(() => process.exit(0)).catch(() => process.exit(1));

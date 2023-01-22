@@ -17,10 +17,10 @@ jobs:
         node-version: [16.x]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
 
@@ -54,6 +54,6 @@ jobs:
       # If this fails, don't worry the JSON output will be printed as a backup.
       continue-on-error: true
       with:
-        name: 'Tests ${{ matrix.os }}'
+        name: 'test (${{ matrix.os }}, ${{ matrix.node-version }})'
         path: ${{ runner.temp }}/report-${{ matrix.os }}.json
         reporter: mocha-json
