@@ -1,23 +1,21 @@
 'use strict';
 
-const assert = require('assert');
-const { fail } = require('../src/output');
+import assert from 'assert';
+import { fail } from '../src/output';
 
 describe('output', () => {
   describe('fail', () => {
-    let core;
+    let setFailed;
     let actualError;
     before(() => {
-      core = fail.core;
-      fail.core = {
-        setFailed: err => actualError = err,
-      };
+      setFailed = fail.setFailed;
+      fail.setFailed = err => actualError = err;
     });
     beforeEach(() => {
       actualError = undefined;
     });
     after(() => {
-      fail.core = core;
+      fail.core = setFailed;
     })
 
     it('should call setFailed, given string', () => {

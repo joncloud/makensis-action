@@ -1,5 +1,7 @@
 'use strict';
 
+import { fork } from 'child_process';
+
 // Convert all of the arguments into environment variables to get
 // around hyphenated names being problematic on non-windows platforms.
 const args = process.argv.splice(2);
@@ -15,4 +17,7 @@ for (let i = 0; i < args.length; i += 2) {
   process.env[key] = value;
 }
 
-require('../dist');
+fork('./dist/index.cjs')
+  .on('exit', (code) => {
+    process.exit(code);
+  });

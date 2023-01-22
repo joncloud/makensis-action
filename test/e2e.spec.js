@@ -1,13 +1,15 @@
 'use strict';
 
-const assert = require('assert');
-const { exec } = require('child_process');
-const { access, unlink } = require('fs/promises');
-const path = require('path');
+import assert from 'assert';
+import { exec } from 'child_process';
+import { access, unlink, readFile } from 'fs/promises';
+import { dirname, join, resolve } from 'path';
+import { createHash } from 'crypto';
+import { platform } from 'os';
 
-const exists = async (path) => {
+const exists = async (p) => {
   try {
-    await access(path);
+    await access(p);
     return true;
   }
   catch {
@@ -16,11 +18,11 @@ const exists = async (path) => {
 };
 
 /**
- * @param {string} path
+ * @param {string} p
  */
-const unlinkIfExistsAsync = async (path) => {
-  if (await exists(path)) {
-    unlink(path);
+const unlinkIfExistsAsync = async (p) => {
+  if (await exists(p)) {
+    unlink(p);
   }
 };
 
@@ -64,9 +66,9 @@ describe('e2e', () => {
 
     // Call bootstrap.js do avoid a problem where hyphenated environment
     // variables are unable to be assigned on non-windows platforms.
-    const programPath = require.resolve('./bootstrap');
-    const testDir = path.dirname(programPath);
-    const cwd = path.join(testDir, '../');
+    const programPath = resolve('./test/bootstrap.js');
+    const testDir = dirname(programPath);
+    const cwd = join(testDir, '../');
     const promise = new Promise((resolve, reject) => {
       exec(`node ${programPath} ${args.join(' ')}`, {
         env,
@@ -114,4 +116,31 @@ describe('e2e', () => {
   test('with-plugins', options => options.additionalPluginPaths = [
     './test/EnVar'
   ]);
+
+  // Skip for windows due to inconsistency
+  if (platform() !== 'win32') {
+    it('should have the latest build committed', async () => {
+      const hashFile = async (filename) => {
+        const buffer = await readFile(filename);
+        const hex = createHash('sha256')
+          .update(buffer)
+          .digest('hex');
+        return hex;
+      };
+
+      const before = await hashFile('./dist/index.cjs');
+      await new Promise((resolve, reject) => {
+        exec('npm run build').on('exit', (code) => {
+          if (code === 0) {
+            resolve(code);
+          } else {
+            reject(code);
+          }
+        });
+      });
+      const after = await hashFile('./dist/index.cjs');
+
+      assert.strictEqual(before, after);
+    });
+  }
 });

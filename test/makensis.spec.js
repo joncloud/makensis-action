@@ -1,8 +1,8 @@
 'use strict';
 
-const assert = require('assert');
-const fs = require('fs/promises');
-const makensis = require('../src/makensis');
+import assert from 'assert';
+import { access } from 'fs/promises';
+import makensis from '../src/makensis';
 
 describe('Makensis', () => {
   describe('execAsync', () => {
@@ -32,7 +32,7 @@ describe('Makensis', () => {
       assert(nsisDir, 'NSISDIR should be defined');
 
       assert.doesNotThrow(
-        () => fs.access(nsisDir),
+        () => access(nsisDir),
         `NSISDIR (${nsisDir}) should exist`
       );
     });

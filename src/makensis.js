@@ -1,11 +1,10 @@
-const { promisify } = require('util');
-const fs = require('fs');
+import { promisify } from 'util';
+import { existsSync } from 'fs';
+import { exec } from 'child_process';
+import { join } from 'path';
+import { platform, env } from 'process';
 
-const { exec } = require('child_process');
 const execAsync = promisify(exec);
-
-const path = require('path');
-const { platform, env } = require('process');
 
 /**
  * Returns the first path that exists on disk.
@@ -13,7 +12,7 @@ const { platform, env } = require('process');
  * @returns {string}
  */
 const firstValidPath = (paths) => {
-  const possiblePaths = paths.filter(fs.existsSync);
+  const possiblePaths = paths.filter(existsSync);
 
   return possiblePaths.length ? possiblePaths[0] : '';
 };
@@ -23,8 +22,8 @@ const firstValidPath = (paths) => {
  */
 const getWin32Path = () => {
   const evaluationPaths = env.PATH.split(';').concat([
-    path.join('C:', 'Program Files (x86)', 'NSIS')
-  ]).map(p => path.join(p, 'makensis.exe'));
+    join('C:', 'Program Files (x86)', 'NSIS')
+  ]).map(p => join(p, 'makensis.exe'));
 
   return firstValidPath(
     evaluationPaths
@@ -39,7 +38,7 @@ const getLinuxPath = () => {
     '/usr/local/bin',
     '/usr/bin',
     '/opt/local/bin'
-  ]).map(p => path.join(p, 'makensis'));
+  ]).map(p => join(p, 'makensis'));
 
   return firstValidPath(evaluationPaths);
 };
@@ -50,7 +49,7 @@ class Makensis {
    * @throws {Error} Argument path is falsy, or the path does not exist on disk.
    */
   constructor(path) {
-    if (!path || !fs.existsSync(path)) {
+    if (!path || !existsSync(path)) {
       throw new Error('Unable to find makensis executable');
     }
     /** @private @type {string} */
@@ -110,4 +109,4 @@ const makensisPath = platform === 'win32'
   ? getWin32Path()
   : getLinuxPath();
 
-module.exports = new Makensis(makensisPath);
+export default new Makensis(makensisPath);
