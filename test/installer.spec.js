@@ -88,6 +88,49 @@ describe('Installer', () => {
     });
   });
 
+  describe('getDefines', () => {
+    it('should return empty, given no defines', () => {
+      const debugMode = false;
+      const target = new Installer(debugMode);
+
+      const expected = [];
+      const actual = target.getDefines();
+
+      assert.deepStrictEqual(actual, expected);
+
+      assert.strictEqual(target.getCustomArguments(), '');
+    });
+
+    it('should return some, given one setDefine call', () => {
+      const debugMode = false;
+      const target = new Installer(debugMode);
+
+      target.setDefine('foo=bar');
+
+      const expected = ['foo=bar'];
+      const actual = target.getDefines();
+
+      assert.deepStrictEqual(actual, expected);
+
+      assert.strictEqual(target.getCustomArguments(), '-Dfoo=bar');
+    });
+
+    it('should return some, given two setDefine calls', () => {
+      const debugMode = false;
+      const target = new Installer(debugMode);
+
+      target.setDefine('foo=bar');
+      target.setDefine('lorem=ipsum');
+
+      const expected = ['foo=bar', 'lorem=ipsum'];
+      const actual = target.getDefines();
+
+      assert.deepStrictEqual(actual, expected);
+
+      assert.strictEqual(target.getCustomArguments(), '-Dfoo=bar -Dlorem=ipsum');
+    });
+  });
+
   describe('getProcessArguments', () => {
     it('should default to no warnings verbosity, given no debug mode', () => {
       const debugMode = false;

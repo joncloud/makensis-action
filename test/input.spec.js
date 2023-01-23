@@ -59,5 +59,32 @@ describe('input', () => {
       const { scriptFile: actual } = getInput()
       assert.strictEqual(actual, expected);
     });
+
+    it('should assign defines, given \'defines\'', () => {
+      inputs = {
+        defines: 'abc\ndef\rghi',
+      };
+      const expected = ['abc', 'def', 'ghi'];
+      const { defines: actual } = getInput()
+      assert.deepStrictEqual(actual, expected);
+    });
+
+    it('should not include defines, given whitespace in \'defines\'', () => {
+      inputs = {
+        defines: 'abc\ndef\rghi\n   \t\r\njkl',
+      };
+      const expected = ['abc', 'def', 'ghi', 'jkl'];
+      const { defines: actual } = getInput()
+      assert.deepStrictEqual(actual, expected);
+    });
+
+    it('should trim defines, given whitespace padding in \'defines\'', () => {
+      inputs = {
+        defines: 'abc\n  def  \r\t\tghi\t\t\nsomething with spaces',
+      };
+      const expected = ['abc', 'def', 'ghi', 'something with spaces'];
+      const { defines: actual } = getInput()
+      assert.deepStrictEqual(actual, expected);
+    });
   });
 });

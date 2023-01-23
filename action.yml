@@ -16,6 +16,11 @@ inputs:
     required: false
     default: ''
 
+  defines:
+    description: 'Newline-delimited list of key-value pairs to define variables'
+    required: false
+    default: ''
+
 runs:
   using: 'node16'
   main: 'dist/index.cjs'
