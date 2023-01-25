@@ -5,7 +5,7 @@
   },
   "waitFor": "onCreateCommand",
   "updateContentCommand": "npm ci && npm run build && npm run test",
-  "postCreateCommand": "apt update && apt install -y nsis nsis-pluginapi",
+  "postCreateCommand": "sudo apt update && sudo apt install -y nsis nsis-pluginapi && sudo chown -R node:node /usr/share/nsis/",
   "customizations": {
     "codespaces": {
       "openFiles": []
