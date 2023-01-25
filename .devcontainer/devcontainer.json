@@ -1,0 +1,14 @@
+{
+  "image": "mcr.microsoft.com/vscode/devcontainers/javascript-node:16",
+  "hostRequirements": {
+    "cpus": 1
+  },
+  "waitFor": "onCreateCommand",
+  "updateContentCommand": "npm ci && npm run build && npm run test",
+  "postCreateCommand": "apt update && apt install -y nsis nsis-pluginapi",
+  "customizations": {
+    "codespaces": {
+      "openFiles": []
+    }
+  }
+}
