@@ -36,17 +36,20 @@ describe('e2e', () => {
 
   /**
    * @typedef {{
-   *   customArguments?: string,
-   *   additionalPluginPaths?: string[],
-   *   scriptFile?: string,
+   *   customArguments: string,
+   *   additionalPluginPaths: string[],
+   *   scriptFile: string,
+   *   defines: string[],
+   *   outfile: string,
    * }} RunOptions
-   * @param {RunOptions} options
+   * @param {Partial<RunOptions>} options
    */
   const run = async (options = {}) => {
     const {
       customArguments,
       additionalPluginPaths,
-      scriptFile
+      scriptFile,
+      defines,
     } = options;
 
     const args = [];
@@ -62,6 +65,9 @@ describe('e2e', () => {
     }
     if (scriptFile) {
       args.push('INPUT_SCRIPT-FILE', scriptFile);
+    }
+    if (defines) {
+      args.push('INPUT_DEFINES', defines.join('\n'));
     }
 
     // Call bootstrap.js do avoid a problem where hyphenated environment
@@ -90,10 +96,11 @@ describe('e2e', () => {
 
   /**
    * @param {string} script
-   * @param {(options: RunOptions) => void} fn
+   * @param {(options: Partial<RunOptions>) => void} fn
    */
   const test = (script, fn) => {
     it(`should create installer for ${script}.nsi`, async () => {
+      /** @type {Partial<RunOptions>} */
       const options = {
         scriptFile: `./test/${script}.nsi`
       };
@@ -103,11 +110,13 @@ describe('e2e', () => {
 
       await run(options);
 
-      const actual = await exists(`./test/${script}.exe`);
+      const outfile = options.outfile || script;
+
+      const actual = await exists(`./test/${outfile}.exe`);
 
       assert(
         actual,
-        `Installer \`./test/${script}.exe\` should exist`
+        `Installer \`./test/${outfile}.exe\` should exist`
       );
     });
   };
@@ -116,6 +125,12 @@ describe('e2e', () => {
   test('with-plugins', options => options.additionalPluginPaths = [
     './test/EnVar'
   ]);
+  test('with-defines', options => {
+    options.defines = [
+      'OUT_FILE=foo',
+    ];
+    options.outfile = 'foo';
+  });
 
   // Skip for windows due to inconsistency
   if (platform() !== 'win32') {

@@ -17,7 +17,7 @@ const { F_OK } = constants;
 
 /**
  * @param {string} item
- * @returns {Promise.<boolean>}
+ * @returns {Promise<boolean>}
  */
 const isDirectoryAsync = async (item) => {
   const stats = await stat(item);
@@ -27,7 +27,7 @@ const isDirectoryAsync = async (item) => {
 
 /**
  * @param {string} item
- * @returns {Promise.<boolean>}
+ * @returns {Promise<boolean>}
  */
 const fileExistsAsync = async (item) => {
   try {
@@ -42,7 +42,7 @@ const fileExistsAsync = async (item) => {
 /**
  * @param {string} src
  * @param {string} dest
- * @returns {Promise.<void>}
+ * @returns {Promise<void>}
  */
 const copyDirectoryAsync = async (src, dest) => {
   console.log('copyDirectory', src, dest);
@@ -120,6 +120,29 @@ export class Installer {
   addPluginPath(pluginPath) {
     this.debugLog(`Adding plugin path: ${pluginPath}`);
     this.pluginPaths.push(pluginPath);
+  }
+
+  getDefines() {
+    const exp = /-D([^ ]+)/g;
+    let res;
+    const defines = [];
+    while (res = exp.exec(this.customArguments)) {
+      defines.push(res[1]);
+    }
+
+    return defines;
+  }
+
+  /**
+   * @param {string} define
+   */
+  setDefine(define) {
+    this.debugLog(`Adding define ${define}`);
+    const customArg = `-D${define}`;
+    if (this.customArguments.length) {
+      this.customArguments += ' ';
+    }
+    this.customArguments += customArg;
   }
 
   /**

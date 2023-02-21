@@ -20,7 +20,7 @@ const getBoolean = (value) => {
 };
 
 /**
- * @returns {Promise.<void>}
+ * @returns {Promise<void>}
  */
 const run = async () => {
   try {
@@ -29,12 +29,17 @@ const run = async () => {
       customArguments,
       additionalPluginPaths,
       scriptFile,
+      defines,
     } = getInput();
     const installer = new Installer(debugMode);
     installer.setCustomArguments(customArguments);
 
     additionalPluginPaths
       .forEach(pluginPath => installer.addPluginPath(pluginPath.trim()));
+
+    for (const define of defines) {
+      installer.setDefine(define);
+    }
 
     await installer.createInstallerAsync(
       scriptFile

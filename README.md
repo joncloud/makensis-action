@@ -30,6 +30,10 @@ Arguments to makensis.exe. Default: `""`.
 
 Newline-delimited list of paths to load plugins from. Default `""`.
 
+### `defines`
+
+Newline-delimited list of key-value pairs to define variables. Default `""`.
+
 ## Example usage
 
 ```yml

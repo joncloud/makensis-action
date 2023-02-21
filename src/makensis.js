@@ -59,7 +59,7 @@ class Makensis {
   /**
    * Executes the makensis program, and returns its stdout.
    * @param {string} args The arguments passed onto the makensis program.
-   * @returns {string}
+   * @returns {Promise<string>}
    */
   async execAsync(args) {
     const result = await execAsync(`"${this.path}" ${args}`);
@@ -71,7 +71,7 @@ class Makensis {
    * @typedef {{
    *   [name: string]: string | undefined
    * }} Symbols
-   * @returns {Promise.<Symbols>}
+   * @returns {Promise<Symbols>}
    * @throws {Error} Given no symbols were output from the makensis -HDRINFO command.
    */
   async getSymbolsAsync() {
