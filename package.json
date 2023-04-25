@@ -30,6 +30,6 @@
   "devDependencies": {
     "esbuild": "^0.17.4",
     "mocha": "^10.2.0",
-    "yaml": "^2.2.1"
+    "yaml": "^2.2.2"
   }
 }
