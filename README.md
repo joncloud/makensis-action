@@ -34,7 +34,7 @@ Newline-delimited list of paths to load plugins from. Default `""`.
 
 ```yml
 - name: Create installer
-  uses: joncloud/makensis-action@v4
+  uses: joncloud/makensis-action@v4.1
   with:
     arguments: "/V3"
 ```
