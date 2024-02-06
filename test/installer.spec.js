@@ -3,7 +3,7 @@
 import { access, unlink } from 'fs/promises';
 import { resolve } from 'path';
 import assert from 'assert';
-import { Installer } from '../src/installer';
+import { Installer } from '../src/installer.js';
 
 const exists = async (p) => {
   try {
