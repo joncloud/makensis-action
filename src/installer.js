@@ -11,7 +11,7 @@ import {
   basename,
   resolve,
 } from 'path';
-import makensis from './makensis';
+import makensis from './makensis.js';
 
 const { F_OK } = constants;
 

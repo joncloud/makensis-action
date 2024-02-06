@@ -1,7 +1,7 @@
 'use strict';
 
 import assert from 'assert';
-import { fail } from '../src/output';
+import { fail } from '../src/output.js';
 
 describe('output', () => {
   describe('fail', () => {

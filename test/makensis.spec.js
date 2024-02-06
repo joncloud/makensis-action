@@ -2,7 +2,7 @@
 
 import assert from 'assert';
 import { access } from 'fs/promises';
-import makensis from '../src/makensis';
+import makensis from '../src/makensis.js';
 
 describe('Makensis', () => {
   describe('execAsync', () => {

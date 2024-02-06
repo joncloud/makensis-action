@@ -1,7 +1,7 @@
 'use strict';
 
 import assert from 'assert';
-import { getInput } from '../src/input';
+import { getInput } from '../src/input.js';
 
 describe('input', () => {
   describe('getInput', () => {

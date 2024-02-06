@@ -1,11 +1,13 @@
 'use strict';
 
 import assert from 'assert';
-import { exec } from 'child_process';
-import { access, unlink, readFile } from 'fs/promises';
+import { exec, fork } from 'child_process';
+import { createReadStream } from 'fs';
+import { access, unlink, stat } from 'fs/promises';
 import { dirname, join, resolve } from 'path';
 import { createHash } from 'crypto';
 import { platform } from 'os';
+import { pipeline } from 'stream/promises';
 
 const exists = async (p) => {
   try {
@@ -70,15 +72,13 @@ describe('e2e', () => {
     const testDir = dirname(programPath);
     const cwd = join(testDir, '../');
     const promise = new Promise((resolve, reject) => {
-      exec(`node ${programPath} ${args.join(' ')}`, {
+      const proc = fork(programPath, args, {
         env,
         cwd,
-      }, (error, stdout, stderr) => {
-        console.log('cwd', cwd);
-        console.log('stdout', stdout);
-        console.log('stderr', stderr);
-        if (error) {
-          reject(error);
+      });
+      proc.on('close', (exitCode) => {
+        if (exitCode !== 0) {
+          reject(new Error(`Unexpected exit code: ${exitCode}`));
         } else {
           resolve();
         }
@@ -121,10 +121,10 @@ describe('e2e', () => {
   if (platform() !== 'win32') {
     it('should have the latest build committed', async () => {
       const hashFile = async (filename) => {
-        const buffer = await readFile(filename);
-        const hex = createHash('sha256')
-          .update(buffer)
-          .digest('hex');
+        const stream = createReadStream(filename, { autoClose: true });
+        const hash = createHash('sha256');
+        await pipeline(stream, hash);
+        const hex = hash.digest('hex');
         return hex;
       };
 
@@ -143,4 +143,12 @@ describe('e2e', () => {
       assert.strictEqual(before, after);
     });
   }
+
+  // The bundle shouldn't grow too large. This test will make
+  // sure that any future changes intentionally increases the bundle size.
+  it('should not have an unexpectedly large bundled file', async () => {
+    const actual = await stat('./dist/index.cjs');
+
+    assert.ok(actual.size < 45000);
+  });
 });
