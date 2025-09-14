@@ -41,7 +41,7 @@ Newline-delimited list of paths to load plugins from. Default `""`.
 
 ## Development
 
-This action needs to be built from the source code located in the `/src` folder. Whenever you make changes, you should run the `npm run build` script. Otherwise, your changes won't be tested by CI.
+This action needs to be built from the source code located in the `/src` folder. Whenever you make changes, you should run the `pnpm build` script. Otherwise, your changes won't be tested by CI.
 
 ## Sample Projects
 

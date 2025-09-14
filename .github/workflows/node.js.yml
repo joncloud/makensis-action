@@ -14,15 +14,17 @@ jobs:
     strategy:
       matrix:
         os: [ 'windows-latest', 'ubuntu-latest', 'macos-latest' ]
-        node-version: [20.x]
+        node-version: [ 20.x, 22.x, 24.x ]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v5
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
+    - name: 'Setup pnpm'
+      uses: pnpm/action-setup@v4
+
+    - name: 'Install makensis'
+      run: choco install nsis
+      if: ${{ matrix.os == 'windows-latest' }}
 
     - name: 'Install makensis (apt)'
       run: sudo apt update && sudo apt install -y nsis nsis-pluginapi
@@ -37,23 +39,27 @@ jobs:
       if: ${{ matrix.os == 'ubuntu-latest' }}
 
     - name: 'Install npm dependencies'
-      run: npm ci
+      run: pnpm install
 
     - name: 'Test'
-      run: npm test -- --reporter json --reporter-options output=${{ runner.temp }}/report-${{ matrix.os }}.json
+      run: |
+        pnpm test \
+          --reporter json \
+          --reporter-options \
+            output=${{ runner.temp }}/report-${{ matrix.os }}-${{ matrix.node-version }}.json
 
     - name: 'Print Tests'
       # run this step even if previous step failed
       if: (success() || failure())
-      run: cat ${{ runner.temp }}/report-${{ matrix.os }}.json | jq
+      run: cat ${{ runner.temp }}/report-${{ matrix.os }}-${{ matrix.node-version }}.json | jq
 
     - name: 'Publish Tests'
-      uses: 'dorny/test-reporter@v1'
+      uses: dorny/test-reporter@v2
       # run this step even if previous step failed
       if: ${{ !env.ACT }} && (success() || failure())
       # If this fails, don't worry the JSON output will be printed as a backup.
       continue-on-error: true
       with:
         name: 'test (${{ matrix.os }}, ${{ matrix.node-version }})'
-        path: ${{ runner.temp }}/report-${{ matrix.os }}.json
+        path: ${{ runner.temp }}/report-${{ matrix.os }}-${{ matrix.node-version }}.json
         reporter: mocha-json

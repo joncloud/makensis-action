@@ -17,8 +17,8 @@ inputs:
     default: ''
 
 runs:
-  using: 'node20'
-  main: 'dist/index.cjs'
+  using: node24
+  main: dist/index.cjs
 
 branding:
   icon: 'triangle'
