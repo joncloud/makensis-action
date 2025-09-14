@@ -22,7 +22,7 @@ jobs:
     - name: 'Setup pnpm'
       uses: pnpm/action-setup@v4
 
-    - name: 'Install makensis'
+    - name: 'Install makensis (choco)'
       run: choco install nsis
       if: ${{ matrix.os == 'windows-latest' }}
 
