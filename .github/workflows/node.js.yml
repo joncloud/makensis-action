@@ -43,10 +43,7 @@ jobs:
 
     - name: 'Test'
       run: |
-        pnpm test \
-          --reporter json \
-          --reporter-options \
-            output=${{ runner.temp }}/report-${{ matrix.os }}-${{ matrix.node-version }}.json
+        pnpm test --reporter json --reporter-options output=${{ runner.temp }}/report-${{ matrix.os }}-${{ matrix.node-version }}.json
 
     - name: 'Print Tests'
       # run this step even if previous step failed
