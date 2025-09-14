@@ -153,6 +153,6 @@ describe('e2e', () => {
   it('should not have an unexpectedly large bundled file', async () => {
     const actual = await stat(entryPoint);
 
-    assert.ok(actual.size < 40000, `Bundled file size is unexpectedly large: ${actual.size}`);
+    assert.ok(actual.size < 4000, `Bundled file size is unexpectedly large: ${actual.size}`);
   });
 });

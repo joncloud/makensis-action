@@ -28,9 +28,6 @@
     "pnpm": "10.16.1"
   },
   "packageManager": "pnpm@10.16.1",
-  "dependencies": {
-    "@actions/core": "^1.11.1"
-  },
   "devDependencies": {
     "mocha": "^11.7.2",
     "tsdown": "^0.15.1",

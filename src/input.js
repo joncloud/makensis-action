@@ -1,7 +1,5 @@
 'use strict';
 
-import { getInput as coreGetInput } from '@actions/core';
-
 /**
  * @typedef {{
  *   customArguments: string,
@@ -26,4 +24,9 @@ export const getInput = () => {
     scriptFile,
   }
 };
-getInput.coreGetInput = coreGetInput;
+getInput.coreGetInput = function (name) {
+  const val =
+    process.env[`INPUT_${name.replace(/ /g, '_').toUpperCase()}`] || '';
+
+  return val.trim();
+};
