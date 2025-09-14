@@ -9,6 +9,10 @@ import { createHash } from 'crypto';
 import { platform } from 'os';
 import { pipeline } from 'stream/promises';
 
+import { getActionEntryPoint } from './getActionEntryPoint.js';
+
+const entryPoint = await getActionEntryPoint();
+
 const exists = async (p) => {
   try {
     await access(p);
@@ -128,9 +132,9 @@ describe('e2e', () => {
         return hex;
       };
 
-      const before = await hashFile('./dist/index.cjs');
+      const before = await hashFile(entryPoint);
       await new Promise((resolve, reject) => {
-        exec('npm run build').on('exit', (code) => {
+        exec('pnpm build').on('exit', (code) => {
           if (code === 0) {
             resolve(code);
           } else {
@@ -138,7 +142,7 @@ describe('e2e', () => {
           }
         });
       });
-      const after = await hashFile('./dist/index.cjs');
+      const after = await hashFile(entryPoint);
 
       assert.strictEqual(before, after);
     });
@@ -147,8 +151,8 @@ describe('e2e', () => {
   // The bundle shouldn't grow too large. This test will make
   // sure that any future changes intentionally increases the bundle size.
   it('should not have an unexpectedly large bundled file', async () => {
-    const actual = await stat('./dist/index.cjs');
+    const actual = await stat(entryPoint);
 
-    assert.ok(actual.size < 45000);
+    assert.ok(actual.size < 4000, `Bundled file size is unexpectedly large: ${actual.size}`);
   });
 });

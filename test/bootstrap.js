@@ -1,6 +1,7 @@
 'use strict';
 
 import { fork } from 'child_process';
+import { getActionEntryPoint } from './getActionEntryPoint.js';
 
 // Convert all of the arguments into environment variables to get
 // around hyphenated names being problematic on non-windows platforms.
@@ -17,7 +18,9 @@ for (let i = 0; i < args.length; i += 2) {
   process.env[key] = value;
 }
 
-fork('./dist/index.cjs')
+const entryPoint = await getActionEntryPoint();
+
+fork(entryPoint)
   .on('exit', (code) => {
     process.exit(code);
   });
