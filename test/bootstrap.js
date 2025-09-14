@@ -17,7 +17,7 @@ for (let i = 0; i < args.length; i += 2) {
   process.env[key] = value;
 }
 
-fork('./dist/index.cjs')
+fork('./dist/index.js')
   .on('exit', (code) => {
     process.exit(code);
   });

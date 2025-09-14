@@ -9,7 +9,7 @@ import { createHash } from 'crypto';
 import { platform } from 'os';
 import { pipeline } from 'stream/promises';
 
-const targetModule = 'dist/index.cjs';
+const targetModule = 'dist/index.js';
 
 const exists = async (p) => {
   try {
@@ -151,6 +151,6 @@ describe('e2e', () => {
   it('should not have an unexpectedly large bundled file', async () => {
     const actual = await stat(targetModule);
 
-    assert.ok(actual.size < 64000, `Bundled file size is unexpectedly large: ${actual.size}`);
+    assert.ok(actual.size < 40000, `Bundled file size is unexpectedly large: ${actual.size}`);
   });
 });
